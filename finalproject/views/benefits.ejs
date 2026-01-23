@@ -1,0 +1,248 @@
+<style>
+    .benefits-section {
+        background: var(--bg-elevated);
+        padding: 120px 0;
+        color: #e5e7eb;
+        font-family: Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
+    }
+
+    .benefits-header {
+        text-align: center;
+        margin-bottom: 60px;
+        padding: 0 18px;
+    }
+
+    .benefits-title {
+        font-size: 46px;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        margin: 0;
+    }
+
+    .benefits-title span {
+        color: var(--accent);
+    }
+
+    .benefits-sub {
+        color: var(--muted);
+        font-size: 16px;
+        max-width: 600px;
+        margin: 14px auto 0;
+        line-height: 1.6;
+    }
+
+    .benefits-grid {
+        max-width: 1300px;
+        margin: 50px auto 0;
+        padding: 0 24px;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 32px;
+        box-sizing: border-box;
+    }
+
+    .benefit-card {
+        text-align: left;
+        padding: 34px 24px 28px;
+        background: var(--bg-card);
+        border: 1px solid rgba(148, 163, 184, 0.45);
+        border-radius: 20px;
+        transition: 0.3s ease;
+        box-shadow:
+          0 18px 45px rgba(15, 23, 42, 0.9);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .benefit-card::before {
+        content: "";
+        position: absolute;
+        inset: -40%;
+        background: radial-gradient(circle at top, rgba(198,255,62,0.16), transparent 60%);
+        opacity: 0;
+        transition: opacity .35s ease;
+        pointer-events: none;
+    }
+
+    .benefit-card:hover::before {
+        opacity: 1;
+    }
+
+    .benefit-card:hover {
+        border-color: var(--accent-2);
+        transform: translateY(-8px);
+        box-shadow:
+          0 26px 60px rgba(15, 23, 42, 0.95),
+          0 0 40px rgba(75, 201, 255, 0.45);
+    }
+
+    .benefit-icon {
+        width: 64px;
+        height: 64px;
+        border-radius: 18px;
+        background: radial-gradient(circle at top, rgba(75,201,255,0.95), rgba(15,23,42,1));
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-bottom: 18px;
+        box-shadow: 0 0 22px rgba(56,189,248,0.7);
+    }
+
+    .benefit-icon i {
+        font-size: 26px;
+        color: #020617;
+    }
+
+    .benefit-title {
+        font-size: 19px;
+        font-weight: 700;
+        margin-bottom: 8px;
+    }
+
+    .benefit-desc {
+        color: var(--muted);
+        font-size: 15px;
+        line-height: 1.6;
+        margin: 0;
+    }
+
+    /* ========= RESPONSIVE ========= */
+    @media (max-width: 1200px) {
+        .benefits-section {
+            padding: 100px 0;
+        }
+
+        .benefits-title {
+            font-size: 40px;
+        }
+
+        .benefits-grid {
+            gap: 28px;
+        }
+    }
+
+    @media (max-width: 900px) {
+        .benefits-section {
+            padding: 80px 0;
+        }
+
+        .benefits-title {
+            font-size: 34px;
+        }
+
+        .benefits-grid {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 22px;
+            padding: 0 18px;
+        }
+
+        .benefit-card {
+            padding: 30px 22px;
+        }
+    }
+
+    @media (max-width: 600px) {
+        .benefits-section {
+            padding: 70px 0;
+        }
+
+        .benefits-title {
+            font-size: 30px;
+        }
+
+        .benefits-sub {
+            font-size: 15px;
+        }
+
+        .benefits-grid {
+            grid-template-columns: 1fr;
+            gap: 18px;
+            padding: 0 14px;
+            margin-top: 36px;
+        }
+
+        .benefit-card {
+            padding: 26px 18px;
+            border-radius: 16px;
+        }
+
+        .benefit-icon {
+            width: 56px;
+            height: 56px;
+            margin-bottom: 14px;
+        }
+
+        .benefit-icon i {
+            font-size: 24px;
+        }
+
+        .benefit-title {
+            font-size: 18px;
+        }
+
+        .benefit-desc {
+            font-size: 14px;
+        }
+    }
+</style>
+
+<section id="benefits" class="benefits-section">
+    <div class="benefits-header" data-animate>
+        <h1 class="benefits-title">
+            Student Monitor <span>Benefits</span>
+        </h1>
+        <p class="benefits-sub">
+            Perks so powerful you’ll never need manual uniform or ID checking again. Seriously.
+        </p>
+    </div>
+
+    <div class="benefits-grid">
+        <div class="benefit-card" data-animate>
+            <div class="benefit-icon"><i class="fa-solid fa-infinity"></i></div>
+            <h3 class="benefit-title">Automated Checks</h3>
+            <p class="benefit-desc">
+                Run unlimited uniform and ID verifications every day—fully automated and effortless.
+            </p>
+        </div>
+
+        <div class="benefit-card" data-animate>
+            <div class="benefit-icon"><i class="fa-solid fa-bolt"></i></div>
+            <h3 class="benefit-title">Instant AI Detection</h3>
+            <p class="benefit-desc">
+                Get results in seconds with real-time accuracy powered by advanced computer vision.
+            </p>
+        </div>
+
+        <div class="benefit-card" data-animate>
+            <div class="benefit-icon"><i class="fa-solid fa-dollar-sign"></i></div>
+            <h3 class="benefit-title">Cost-Efficient Operation</h3>
+            <p class="benefit-desc">
+                Reduce manpower, avoid human errors, and maintain a fixed predictable monitoring cost.
+            </p>
+        </div>
+
+        <div class="benefit-card" data-animate>
+            <div class="benefit-icon"><i class="fa-solid fa-award"></i></div>
+            <h3 class="benefit-title">High Accuracy</h3>
+            <p class="benefit-desc">
+                Enjoy top-tier AI performance that ensures consistent, reliable uniform &amp; ID compliance.
+            </p>
+        </div>
+
+        <div class="benefit-card" data-animate>
+            <div class="benefit-icon"><i class="fa-solid fa-expand"></i></div>
+            <h3 class="benefit-title">Scalable &amp; Flexible</h3>
+            <p class="benefit-desc">
+                Monitor one classroom—or an entire campus. Scale up or down anytime with ease.
+            </p>
+        </div>
+
+        <div class="benefit-card" data-animate>
+            <div class="benefit-icon"><i class="fa-solid fa-shield-halved"></i></div>
+            <h3 class="benefit-title">Secure &amp; Private</h3>
+            <p class="benefit-desc">
+                All detections, alerts, and reports are securely stored and built exclusively for your institution.
+            </p>
+        </div>
+    </div>
+</section>

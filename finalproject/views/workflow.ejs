@@ -1,0 +1,328 @@
+<style>
+    .services-section {
+        background: var(--bg-elevated);
+        padding: 120px 0;
+        color: #e5e7eb;
+        font-family: Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
+    }
+
+    .services-container {
+        max-width: 1400px;
+        margin: auto;
+        padding: 0 80px;
+        box-sizing: border-box;
+    }
+
+    /* ===== HEADER (CLEAN, NO BIG GLOW BOXES) ===== */
+    .services-header {
+        display: grid;
+        grid-template-columns: minmax(0, 1.4fr) minmax(0, 1.1fr);
+        gap: 40px;
+        align-items: center;
+        margin-bottom: 72px;
+    }
+
+    .services-left span {
+        color: var(--accent-2);
+        font-weight: 700;
+        margin-bottom: 10px;
+        display: inline-block;
+        letter-spacing: .18em;
+        font-size: 12px;
+        text-transform: uppercase;
+    }
+
+    .services-title {
+        font-size: 44px;
+        font-weight: 800;
+        line-height: 1.15;
+        margin: 0;
+        letter-spacing: -0.02em;
+    }
+
+    .services-title .sub {
+        display: block;
+        font-size: 16px;
+        font-weight: 500;
+        color: var(--muted);
+        margin-top: 10px;
+        text-transform: uppercase;
+        letter-spacing: .18em;
+    }
+
+    .services-right-top {
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+        align-items: flex-start;
+    }
+
+    .services-desc {
+        color: var(--muted);
+        font-size: 15px;
+        line-height: 1.7;
+        max-width: 520px;
+        margin: 0;
+    }
+
+    .btn-view {
+        background: linear-gradient(135deg, var(--accent), var(--accent-soft));
+        padding: 12px 30px;
+        border-radius: 999px;
+        color: #020617;
+        font-weight: 800;
+        text-decoration: none;
+        white-space: nowrap;
+        font-size: 15px;
+        border: none;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        box-shadow:
+            0 12px 30px rgba(198,255,62,0.35),
+            0 0 22px rgba(56,189,248,0.35);
+        transition:
+            transform 0.22s ease,
+            box-shadow 0.22s ease,
+            filter 0.22s ease;
+    }
+
+    .btn-view::after {
+        content: "→";
+        font-size: 14px;
+        transform: translateX(0);
+        transition: transform 0.22s ease;
+    }
+
+    .btn-view:hover {
+        transform: translateY(-2px);
+        filter: brightness(1.03);
+        box-shadow:
+            0 16px 40px rgba(198,255,62,0.5),
+            0 0 30px rgba(56,189,248,0.45);
+    }
+
+    .btn-view:hover::after {
+        transform: translateX(4px);
+    }
+
+    .btn-view:active {
+        transform: scale(0.97);
+        box-shadow: 0 10px 22px rgba(198,255,62,0.35);
+    }
+
+    /* ===== 4 STEP CARDS (UNCHANGED STYLE, STILL SLEEK) ===== */
+    .services-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 32px;
+    }
+
+    .service-card {
+        background: var(--bg-card);
+        border: 1px solid rgba(148, 163, 184, 0.4);
+        border-radius: 22px;
+        padding: 32px 26px 26px;
+        min-height: 260px;
+        transition: 0.3s ease;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        box-shadow: 0 18px 45px rgba(15,23,42,0.9);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .service-card::before {
+        content: "";
+        position: absolute;
+        inset: -40%;
+        background: radial-gradient(circle at top, rgba(56,189,248,0.18), transparent 55%);
+        opacity: 0;
+        transition: opacity .3s ease;
+        pointer-events: none;
+    }
+
+    .service-card:hover::before {
+        opacity: 1;
+    }
+
+    .service-card:hover {
+        transform: translateY(-8px);
+        border-color: var(--accent-2);
+        box-shadow:
+            0 26px 60px rgba(15,23,42,0.95),
+            0 0 40px rgba(56,189,248,0.4);
+    }
+
+    .icon-box {
+        width: 56px;
+        height: 56px;
+        border-radius: 999px;
+        background: radial-gradient(circle at top, rgba(56,189,248,0.9), rgba(15,23,42,1));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 18px;
+        font-size: 26px;
+        box-shadow: 0 0 22px rgba(56,189,248,0.7);
+    }
+
+    .service-title {
+        font-size: 18px;
+        font-weight: 700;
+        margin-bottom: 8px;
+    }
+
+    .service-text {
+        color: var(--muted);
+        font-size: 14px;
+        line-height: 1.6;
+    }
+
+    .service-link {
+        margin-top: 18px;
+        font-size: 13px;
+        text-decoration: none;
+        color: var(--accent-2);
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .service-link .arrow {
+        transition: transform 0.22s ease;
+    }
+
+    .service-card:hover .service-link .arrow {
+        transform: translateX(4px);
+    }
+
+    /* ========= RESPONSIVE ========= */
+    @media (max-width: 1200px) {
+        .services-section { padding: 100px 0; }
+        .services-container { padding: 0 40px; }
+        .services-title { font-size: 40px; }
+        .services-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+
+    @media (max-width: 900px) {
+        .services-section { padding: 80px 0; }
+        .services-container { padding: 0 20px; }
+
+        .services-header {
+            grid-template-columns: 1fr;
+            gap: 22px;
+            margin-bottom: 46px;
+        }
+
+        .services-right-top {
+            align-items: flex-start;
+        }
+
+        .services-grid {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 22px;
+        }
+
+        .service-card {
+            padding: 28px 22px;
+        }
+    }
+
+    @media (max-width: 600px) {
+        .services-section { padding: 70px 0; }
+        .services-container { padding: 0 14px; }
+        .services-title { font-size: 30px; }
+
+        .services-grid {
+            grid-template-columns: 1fr;
+            gap: 18px;
+        }
+
+        .service-card {
+            padding: 24px 18px;
+        }
+
+        .btn-view {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+</style>
+
+<section id="workflow" class="services-section">
+    <div class="services-container">
+        <div class="services-header">
+            <div class="services-left" data-animate="left">
+                <span>WORK FLOW</span>
+                <h1 class="services-title">
+                    How to Use Student Monitor
+                    <span class="sub">Smarter way to manage campus compliance</span>
+                </h1>
+            </div>
+
+            <div class="services-right-top" data-animate="right">
+                <p class="services-desc">
+                    Student Monitor makes uniform and ID checking effortless with fast, accurate,
+                    and fully automated AI tools. From image upload to real-time alerts, every step
+                    is optimized for modern campuses.
+                </p>
+                <a href="#about" class="btn-view">
+                    Get Started
+                </a>
+            </div>
+        </div>
+
+        <div class="services-grid">
+            <div class="service-card" data-animate>
+                <div>
+                    <div class="icon-box">📤</div>
+                    <h3 class="service-title">1. Upload Image or Connect Camera</h3>
+                    <p class="service-text">
+                        Upload a student photo or connect a live camera feed from gates or classrooms
+                        for real-time monitoring.
+                    </p>
+                </div>
+                <a href="#" class="service-link">Read More <span class="arrow">→</span></a>
+            </div>
+
+            <div class="service-card" data-animate>
+                <div>
+                    <div class="icon-box">🤖</div>
+                    <h3 class="service-title">2. Automatic AI Detection</h3>
+                    <p class="service-text">
+                        Our AI instantly analyzes the frame to detect uniforms and ID cards — no manual
+                        checking required.
+                    </p>
+                </div>
+                <a href="#" class="service-link">Read More <span class="arrow">→</span></a>
+            </div>
+
+            <div class="service-card" data-animate>
+                <div>
+                    <div class="icon-box">⚡</div>
+                    <h3 class="service-title">3. View Results Instantly</h3>
+                    <p class="service-text">
+                        Get immediate results showing compliant / non-compliant status along with
+                        confidence levels and details.
+                    </p>
+                </div>
+                <a href="#" class="service-link">Read More <span class="arrow">→</span></a>
+            </div>
+
+            <div class="service-card" data-animate>
+                <div>
+                    <div class="icon-box">🔔</div>
+                    <h3 class="service-title">4. Receive Alerts Automatically</h3>
+                    <p class="service-text">
+                        Non-compliance alerts are instantly sent to admins, teachers, or security staff
+                        for quick action.
+                    </p>
+                </div>
+                <a href="#" class="service-link">Read More <span class="arrow">→</span></a>
+            </div>
+        </div>
+    </div>
+</section>

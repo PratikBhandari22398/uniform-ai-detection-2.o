@@ -1,0 +1,441 @@
+<style>
+    .experts-section {
+        position: relative;
+        background: var(--bg-elevated);
+        color: #fff;
+        padding: 110px 20px 120px;
+        font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial;
+        overflow: hidden;
+        isolation: isolate;
+    }
+
+    .experts-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 0 28px;
+        box-sizing: border-box;
+    }
+
+    .experts-header {
+        text-align: left;
+        margin-bottom: 42px;
+        max-width: 760px;
+    }
+
+    .experts-eyebrow {
+        color: var(--accent-2);
+        font-weight: 800;
+        letter-spacing: .6px;
+        text-transform: uppercase;
+        font-size: 13px;
+        margin-bottom: 12px;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .experts-eyebrow::before {
+        content: "";
+        width: 26px;
+        height: 2px;
+        border-radius: 999px;
+        background: linear-gradient(90deg, transparent, var(--accent), transparent);
+        animation: shimmer 2.4s linear infinite;
+    }
+
+    @keyframes shimmer {
+        0% { transform: translateX(-8px); opacity: .4; }
+        50% { opacity: 1; }
+        100% { transform: translateX(8px); opacity: .4; }
+    }
+
+    .experts-title {
+        font-size: clamp(30px, 4.5vw, 46px);
+        line-height: 1.04;
+        font-weight: 900;
+        margin: 0 0 14px 0;
+        color: #fff;
+        letter-spacing: -0.02em;
+    }
+
+    .experts-title span {
+        color: var(--accent);
+    }
+
+    .experts-sub {
+        color: var(--muted);
+        max-width: 820px;
+        margin: 12px 0 0 0;
+        line-height: 1.7;
+        font-size: 15px;
+    }
+
+    .experts-grid {
+        margin-top: 40px;
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 28px;
+    }
+
+    .expert-card {
+        position: relative;
+        background: var(--bg-card);
+        border-radius: 18px;
+        padding: 20px 18px 20px;
+        border: 1px solid rgba(148,163,184,.4);
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        min-height: 420px;
+        overflow: hidden;
+        transform: translateY(26px) scale(.98);
+        opacity: 0;
+        transition:
+            transform .35s cubic-bezier(.2, .9, .3, 1),
+            box-shadow .28s,
+            border-color .28s,
+            opacity .35s ease;
+        box-shadow: 0 18px 45px rgba(15,23,42,.9);
+    }
+
+    .expert-card.is-visible {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+
+    .expert-card:hover {
+        border-color: var(--accent);
+        box-shadow:
+            0 26px 60px rgba(15,23,42,.95),
+            0 0 40px rgba(75,201,255,.45);
+        transform: translateY(-10px) scale(1.01);
+    }
+
+    .expert-img-wrap {
+        position: relative;
+        border-radius: 14px;
+        overflow: hidden;
+        box-shadow: 0 18px 50px rgba(0, 0, 0, 0.75);
+    }
+
+    .expert-img {
+        width: 100%;
+        height: 280px;
+        object-fit: cover;
+        display: block;
+        transition: transform .6s ease;
+    }
+
+    .expert-card:hover .expert-img {
+        transform: scale(1.05);
+    }
+
+    .expert-img-wrap::after {
+        content: "";
+        position: absolute;
+        inset: auto 0 0 0;
+        height: 40%;
+        background: linear-gradient(to top, rgba(0,0,0,.85), transparent);
+        pointer-events: none;
+        opacity: .9;
+    }
+
+    .expert-tag-top {
+        position: absolute;
+        left: 14px;
+        top: 14px;
+        padding: 6px 12px;
+        border-radius: 999px;
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: .16em;
+        font-weight: 700;
+        background: rgba(0, 0, 0, 0.65);
+        border: 1px solid rgba(75,201,255,.7);
+        color: var(--accent);
+    }
+
+    .expert-social {
+        position: absolute;
+        right: 14px;
+        top: 14px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        transform: translateX(18px);
+        opacity: 0;
+        pointer-events: none;
+        transition: transform .25s ease, opacity .25s ease;
+        z-index: 2;
+    }
+
+    .expert-card:hover .expert-social {
+        transform: translateX(0);
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+    .social-dot {
+        width: 34px;
+        height: 34px;
+        border-radius: 999px;
+        background: rgba(15,23,42,.75);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid rgba(148,163,184,.4);
+        font-size: 14px;
+        cursor: pointer;
+        transition: .18s ease;
+        color: #fff;
+        text-decoration: none;
+    }
+
+    .social-dot:hover {
+        transform: translateY(-3px);
+        background: var(--accent);
+        color: #020617;
+        border-color: transparent;
+        box-shadow: 0 12px 30px rgba(198,255,62,.35);
+    }
+
+    .expert-icon-box {
+        width: 86px;
+        height: 72px;
+        border-radius: 18px;
+        background: rgba(15,23,42,.9);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: -18px auto 6px;
+        box-shadow: 0 14px 36px rgba(15,23,42,.7);
+        transition: .22s ease;
+    }
+
+    .expert-card:hover .expert-icon-box {
+        background: var(--accent);
+        box-shadow: 0 26px 60px rgba(198,255,62,.22);
+        transform: translateY(-2px);
+    }
+
+    .expert-icon-box i {
+        font-size: 32px;
+        color: var(--accent);
+        transition: .22s ease;
+    }
+
+    .expert-card:hover .expert-icon-box i {
+        color: #020617;
+        transform: scale(1.05);
+    }
+
+    .expert-name {
+        text-align: center;
+        font-weight: 800;
+        font-size: 18px;
+        margin-top: 6px;
+        color: #fff;
+    }
+
+    .expert-role {
+        text-align: center;
+        margin-top: 4px;
+        color: var(--accent-2);
+        font-weight: 700;
+        font-size: 13px;
+        letter-spacing: .3px;
+        text-transform: uppercase;
+    }
+
+    .expert-skills {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-top: 10px;
+    }
+
+    .expert-chip {
+        font-size: 11px;
+        padding: 4px 10px;
+        border-radius: 999px;
+        border: 1px solid rgba(198,255,62,.3);
+        color: var(--muted);
+        background: rgba(15,23,42,.8);
+        text-transform: uppercase;
+        letter-spacing: .08em;
+    }
+
+    .expert-bio {
+        color: var(--muted);
+        font-size: 14px;
+        line-height: 1.6;
+        text-align: center;
+        margin-top: 10px;
+        flex: 1;
+    }
+
+    /* ======= RESPONSIVE ======= */
+    @media (max-width: 1100px) {
+        .experts-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 640px) {
+        .experts-grid { grid-template-columns: 1fr; }
+        .expert-img { height: 220px; }
+    }
+</style>
+
+<section id="team" class="experts-section">
+    <div class="experts-container">
+        <header class="experts-header">
+            <div class="experts-eyebrow">Our Experts</div>
+            <h2 class="experts-title">
+                <span>Professionals Behind Student Monitor</span>
+            </h2>
+            <p class="experts-sub">
+                Meet the team building fast, accurate and production-ready AI systems.
+            </p>
+        </header>
+
+        <div class="experts-grid" id="expertsGrid">
+
+            <!-- CARD 1 -->
+            <article class="expert-card">
+                <div class="expert-img-wrap">
+                    <img src="/team-1.jpeg" class="expert-img">
+                    <div class="expert-tag-top">FullStack Developer</div>
+                    <div class="expert-social">
+                        <a href="#" class="social-dot"><i class="fa-brands fa-linkedin-in"></i></a>
+                        <a href="#" class="social-dot"><i class="fa-brands fa-github"></i></a>
+                    </div>
+                </div>
+
+                <div class="expert-icon-box">
+                    <i class="fa-solid fa-user-gear"></i>
+                </div>
+
+                <div class="expert-name">Pratik Bhandari</div>
+                <div class="expert-role">Frontend & Backend Developer</div>
+
+                <div class="expert-skills">
+                    <span class="expert-chip">API</span>
+                    <span class="expert-chip">Dashboard</span>
+                    <span class="expert-chip">UX</span>
+                </div>
+
+                <p class="expert-bio">
+                    Designs and develops intuitive user interfaces that simplify complex AI workflows.
+                </p>
+            </article>
+
+            <!-- CARD 2 -->
+            <article class="expert-card">
+                <div class="expert-img-wrap">
+                    <img src="/team-2.jpeg" class="expert-img">
+                    <div class="expert-tag-top">Database Engineer</div>
+                    <div class="expert-social">
+                        <a href="#" class="social-dot"><i class="fa-brands fa-linkedin-in"></i></a>
+                        <a href="#" class="social-dot"><i class="fa-brands fa-github"></i></a>
+                    </div>
+                </div>
+
+                <div class="expert-icon-box">
+                    <i class="fa-solid fa-database"></i>
+                </div>
+
+                <div class="expert-name">Meet Ranade</div>
+                <div class="expert-role">Database & AI Engineer</div>
+
+                <div class="expert-skills">
+                    <span class="expert-chip">MySQL</span>
+                    <span class="expert-chip">ML</span>
+                    <span class="expert-chip">System Integration</span>
+                </div>
+
+                <p class="expert-bio">
+                    Behind every powerful application is a strong and secure backend.
+                </p>
+            </article>
+
+            <!-- CARD 3 -->
+            <article class="expert-card">
+                <div class="expert-img-wrap">
+                    <img src="/team-3.jpeg" class="expert-img">
+                    <div class="expert-tag-top">DevOps Architect</div>
+                    <div class="expert-social">
+                        <a href="#" class="social-dot"><i class="fa-brands fa-linkedin-in"></i></a>
+                        <a href="#" class="social-dot"><i class="fa-brands fa-github"></i></a>
+                    </div>
+                </div>
+
+                <div class="expert-icon-box">
+                    <i class="fa-solid fa-network-wired"></i>
+                </div>
+
+                <div class="expert-name">Pushkar Karnavat</div>
+                <div class="expert-role">System Architect & DevOps</div>
+
+                <div class="expert-skills">
+                    <span class="expert-chip">Deployment</span>
+                    <span class="expert-chip">Security</span>
+                    <span class="expert-chip">Architecture</span>
+                </div>
+
+                <p class="expert-bio">
+                    Architecture decides performance, security, and scalability.
+                </p>
+            </article>
+
+            <!-- CARD 4 -->
+            <article class="expert-card">
+                <div class="expert-img-wrap">
+                    <img src="/team-4.jpeg" class="expert-img">
+                    <div class="expert-tag-top">AI Engineer</div>
+                    <div class="expert-social">
+                        <a href="#" class="social-dot"><i class="fa-brands fa-linkedin-in"></i></a>
+                        <a href="#" class="social-dot"><i class="fa-brands fa-dribbble"></i></a>
+                    </div>
+                </div>
+
+                <div class="expert-icon-box">
+                    <i class="fa-solid fa-brain"></i>
+                </div>
+
+                <div class="expert-name">Harshwardhan Patil</div>
+                <div class="expert-role">AI & ML Engineer</div>
+
+                <div class="expert-skills">
+                    <span class="expert-chip">Computer Vision</span>
+                    <span class="expert-chip">Model Training</span>
+                    <span class="expert-chip">Detection</span>
+                </div>
+
+                <p class="expert-bio">
+                    Engineers the AI models that drive real-time uniform and ID detection.
+                </p>
+            </article>
+
+        </div>
+    </div>
+</section>
+
+<script>
+(function () {
+  const cards = document.querySelectorAll('.expert-card');
+  if ('IntersectionObserver' in window) {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry, i) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.2 });
+
+    cards.forEach(card => observer.observe(card));
+  } else {
+    cards.forEach(card => card.classList.add('is-visible'));
+  }
+})();
+</script>

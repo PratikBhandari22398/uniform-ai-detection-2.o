@@ -1,0 +1,150 @@
+<%- include("../includes/boiler.ejs") %>
+<%- include("../includes/nav.ejs") %>
+
+<style>
+  :root {
+    --bg: #050505;
+    --card: rgba(255,255,255,0.03);
+    --border: rgba(255,255,255,0.06);
+    --text: #ffffff;
+    --muted: #bfbfbf;
+    --accent: #EDFF00;
+    --accent-soft: #dfff4d;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: Inter, system-ui, sans-serif;
+  }
+
+  /* Centered Glass Card */
+  .auth-wrap {
+    width: 100%;
+    max-width: 420px;
+    margin: 60px auto;
+    padding: 32px 26px;
+    background: linear-gradient(145deg, rgba(255,255,255,0.04), rgba(0,0,0,0.6));
+    border-radius: 18px;
+    border: 1px solid var(--border);
+    box-shadow: 0 18px 45px rgba(0,0,0,0.7);
+    backdrop-filter: blur(6px);
+  }
+
+  .auth-title {
+    font-size: 26px;
+    font-weight: 900;
+    text-align: center;
+    margin-bottom: 6px;
+  }
+
+  .auth-sub {
+    font-size: 14px;
+    text-align: center;
+    color: var(--muted);
+    margin-bottom: 18px;
+  }
+
+  /* Label */
+  label {
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 6px;
+    display: block;
+  }
+
+  /* === MATCH SIGNUP PAGE INPUT STYLE === */
+  input {
+    width: 100%;
+    padding: 13px 14px;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.03);    /* SAME AS SIGNUP */
+    border: 1px solid rgba(255,255,255,0.08);
+    color: #fff;
+    margin-bottom: 15px;
+    font-size: 15px;
+    transition: 0.18s ease;
+  }
+
+  input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 18px rgba(237,255,0,0.25); /* SAME NEON GLOW */
+    transform: translateY(-1px);
+    outline: none;
+  }
+
+  /* Button */
+  .btn-submit {
+    width: 100%;
+    margin-top: 8px;
+    padding: 12px 16px;
+    border-radius: 999px;
+    background: linear-gradient(135deg, var(--accent), var(--accent-soft));
+    border: none;
+    font-weight: 900;
+    font-size: 16px;
+    cursor: pointer;
+    color: #000;
+    box-shadow: 0 12px 32px rgba(237,255,0,0.25);
+    transition: all .2s ease;
+  }
+
+  .btn-submit:hover {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 16px 40px rgba(237,255,0,0.35);
+  }
+
+  .btn-submit:active {
+    transform: scale(.97);
+  }
+
+  /* Error message */
+  .error {
+    background: rgba(255,0,0,0.07);
+    border: 1px solid rgba(255,0,0,0.3);
+    color: #ffb6b6;
+    padding: 10px 12px;
+    border-radius: 10px;
+    font-size: 13px;
+    margin-bottom: 14px;
+    text-align: center;
+  }
+
+  .hint {
+    margin-top: 14px;
+    font-size: 13px;
+    text-align: center;
+    color: var(--muted);
+  }
+
+  .hint a {
+    color: var(--accent);
+    font-weight: 700;
+  }
+</style>
+
+<div class="auth-wrap">
+
+  <h1 class="auth-title">Welcome Back</h1>
+  <p class="auth-sub">Login to continue</p>
+
+  <% if (typeof error !== "undefined") { %>
+    <div class="error"><%= error %></div>
+  <% } %>
+
+  <form action="/login" method="POST">
+    <label>Username</label>
+    <input name="username" type="text" required>
+
+    <label>Password</label>
+    <input name="password" type="password" required>
+
+    <button type="submit" class="btn-submit">Login</button>
+  </form>
+
+  <p class="hint">
+    Don’t have an account?
+    <a href="/signup">Signup</a>
+  </p>
+
+</div>

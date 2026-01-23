@@ -1,0 +1,638 @@
+<%- include('includes/boiler.ejs') %>
+<%- include('includes/nav.ejs') %>
+
+<style>
+  :root{
+    --bg: #050505;
+    --neon: #EDFF00;
+    --neon-soft: #dfff4d;
+    --muted: #bfbfbf;
+    --card: rgba(255,255,255,0.03);
+    --card-strong: rgba(255,255,255,0.06);
+    --danger: #FF3B4F;
+    --success: #00FF88;
+    --accent: #3b82f6;
+    --accent-2: #4dd0e1;
+  }
+
+  body{ background:var(--bg); color:#fff; font-family:Inter, system-ui, -apple-system, sans-serif; }
+
+  main.detect-page { max-width:1240px; margin:32px auto 40px; padding:0 20px 20px; }
+
+  /* header / hero strip */
+  .detect-header {
+    display:flex; align-items:center; justify-content:space-between; gap:20px;
+    padding:16px 18px; border-radius:16px;
+    background: radial-gradient(circle at top left, rgba(237,255,0,0.04), rgba(255,255,255,0.01));
+    border:1px solid rgba(255,255,255,0.06);
+    box-shadow:0 20px 60px rgba(0,0,0,0.55);
+    margin-bottom:22px;
+  }
+
+  .detect-header-left { max-width:720px; }
+  .detect-eyebrow { font-size:11px; text-transform:uppercase; letter-spacing:.18em; color:var(--muted); font-weight:700; margin-bottom:6px; display:inline-flex; gap:6px; align-items:center;}
+  .detect-eyebrow::before { content:""; width:18px; height:2px; border-radius:999px; background:linear-gradient(90deg, transparent, var(--neon), transparent); opacity:.7; }
+  .title { font-weight:900; font-size:26px; margin:0; }
+  .title span { color:var(--neon); }
+  .subtitle { color:var(--muted); margin-top:6px; max-width:760px; font-size:14px; line-height:1.6; }
+  .detect-header-right { text-align:right; font-size:13px; }
+  .detect-header-right strong { color:var(--neon); }
+
+  .main-grid { display:grid; grid-template-columns: 1.1fr .8fr; gap:22px; }
+
+  .card {
+    background:linear-gradient(145deg, rgba(255,255,255,0.03), rgba(0,0,0,0.85));
+    border:1px solid rgba(255,255,255,0.06);
+    border-radius:18px; padding:16px 16px 18px;
+    box-shadow:0 18px 50px rgba(0,0,0,0.75);
+  }
+
+  .card-header-row { display:flex; align-items:center; justify-content:space-between; margin-bottom:6px; }
+
+  .camera-area {
+    background:radial-gradient(circle at top, #202020, #050505);
+    border-radius:14px; height:440px;
+    display:flex; align-items:center; justify-content:center;
+    position:relative; overflow:hidden; border:1px solid rgba(255,255,255,0.08);
+  }
+
+  video, img.preview { width:100%; height:100%; object-fit:contain; display:block; background:#050505; }
+  .placeholder { color:var(--muted); text-align:center; padding:8px; }
+
+  .overlay { position:absolute; inset:10px; pointer-events:none; }
+
+  .controls { display:flex; gap:10px; margin-top:12px; flex-wrap:wrap; align-items:center; }
+
+  .btn { cursor:pointer; border:none; padding:10px 22px; border-radius:999px; font-weight:800; font-size:14px; display:inline-flex; gap:6px; transition: all .18s ease; user-select:none; }
+  .btn-primary { background:var(--neon); color:#000; box-shadow:0 10px 28px rgba(237,255,0,0.35); }
+  .btn-primary:hover { background:var(--neon-soft); transform:translateY(-1px) scale(1.03); box-shadow:0 16px 40px rgba(237,255,0,0.5); }
+  .btn-secondary { background:rgba(255,255,255,0.02); color:#fdfdfd; border:1px solid rgba(255,255,255,0.06); }
+  .btn-mini { padding:6px 14px; font-size:13px; }
+
+  .btn:disabled { opacity:0.5; cursor:not-allowed; transform:none; box-shadow:none; }
+
+  .stats { display:grid; grid-template-columns:repeat(2,1fr); gap:10px; margin-top:12px; }
+  .stat { padding:10px 10px 12px; border-radius:12px; background:rgba(255,255,255,0.02); text-align:center; border:1px solid rgba(255,255,255,0.04); }
+  .num { color:var(--neon); font-weight:900; font-size:20px; }
+  .label { color:var(--muted); font-size:12px; }
+
+  .results { margin-top:12px; max-height:300px; overflow:auto; padding-right:6px; }
+  .result-item { display:flex; gap:8px; align-items:center; padding:8px 4px; border-bottom:1px dashed rgba(255,255,255,0.03); }
+  .result-item .dot { width:12px; height:12px; border-radius:3px; background:var(--neon); flex:0 0 12px; }
+
+  .muted { color:var(--muted); }
+  .tiny  { font-size:12px; color:var(--muted); }
+
+  .history-heading { margin-top:16px; font-size:13px; color:var(--muted); font-weight:600; }
+
+  .controls .file-input { display: none; }
+
+  /* small toast */
+  .toast {
+    position:fixed; right:18px; bottom:18px; background:rgba(0,0,0,0.6);
+    color:#fff; padding:10px 14px; border-radius:10px; font-weight:700;
+    box-shadow:0 8px 28px rgba(0,0,0,0.6);
+    z-index:9999; pointer-events:none;
+  }
+
+  /* responsive */
+  @media (max-width:1000px){ main.detect-page{margin-top:24px;} .main-grid{grid-template-columns:1fr;} .camera-area{height:360px;} }
+  @media (max-width:768px){ .detect-header{flex-direction:column;align-items:flex-start;} .detect-header-right{text-align:left;} .camera-area{height:320px;} }
+  @media (max-width:520px){ main.detect-page{padding:0 14px 18px;} .detect-header{padding:14px;border-radius:14px;} .title{font-size:22px;} .camera-area{height:260px;} .controls .btn{flex:1 1 48%;} #runDetectBtn{flex:1 1 100%;} }
+</style>
+
+<main class="detect-page" aria-live="polite">
+  <header class="detect-header">
+    <div class="detect-header-left">
+      <div class="detect-eyebrow">Detection Console</div>
+      <h1 class="title">Image Detection — <span>Uniform &amp; ID Check</span></h1>
+      <p class="subtitle">
+        Upload an image or start your camera. Our AI will classify whether the student is
+        <strong>compliant</strong> with uniform / ID rules — built for teachers, admins and security staff.
+      </p>
+    </div>
+
+    <div class="detect-header-right" aria-hidden="false">
+      <div class="tiny muted">Logged in as</div>
+      <div style="font-size:14px; margin-top:2px;">
+        <strong><%= (typeof user !== 'undefined' && user) ? user.username : 'Guest' %></strong>
+      </div>
+      <div style="margin-top:10px;">
+        <a href="/teacher-login" class="btn btn-primary btn-mini" aria-label="Teacher login">
+          <i class="fa-solid fa-chalkboard-user"></i> Teacher Login
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <section class="main-grid" role="region" aria-label="Detection workspace">
+    <div class="card" aria-label="camera card">
+      <div class="card-header-row">
+        <div class="tiny muted">Input Source</div>
+        <div class="tiny muted">Inference: <span id="inferTime">—</span></div>
+      </div>
+
+      <div class="camera-area" id="cameraArea" aria-live="polite" aria-atomic="true">
+        <video id="video" autoplay muted playsinline style="display:none" aria-hidden="true"></video>
+        <img class="preview" id="previewImg" src="" alt="uploaded preview" style="display:none" />
+        <div class="placeholder" id="cameraPlaceholder" role="status">
+          <div style="font-weight:800;font-size:18px;color:#fff;margin-bottom:6px">No active feed</div>
+          <div class="muted">Start camera or upload an image to begin detection</div>
+        </div>
+        <div class="overlay" id="overlay" aria-hidden="true"></div>
+      </div>
+
+      <div class="controls" role="group" aria-label="detection controls">
+        <label class="btn btn-secondary btn-mini" for="fileInput">
+          <i class="fa-solid fa-upload"></i> Upload Image
+          <input id="fileInput" class="file-input" type="file" accept="image/*" aria-label="Upload image">
+        </label>
+
+        <button id="snapshotBtn" class="btn btn-secondary btn-mini" title="Take a snapshot from the camera">
+          <i class="fa-solid fa-camera"></i> Snapshot
+        </button>
+
+        <button id="startCamBtn" class="btn btn-secondary btn-mini" aria-pressed="false">
+          <i class="fa-solid fa-video"></i> Start Cam
+        </button>
+
+        <button id="switchCamBtn" class="btn btn-secondary btn-mini" title="Switch between front and back camera">
+          <i class="fa-solid fa-rotate"></i> Switch Cam
+        </button>
+
+        <button id="stopCamBtn" class="btn btn-secondary btn-mini" disabled aria-pressed="false">
+          <i class="fa-solid fa-stop"></i> Stop
+        </button>
+
+        <button id="toggleAutoBtn" class="btn btn-secondary btn-mini" aria-pressed="true">
+          <i class="fa-solid fa-bolt"></i> Auto: <span id="autoFrames">ON</span>
+        </button>
+
+        <button id="runDetectBtn" class="btn btn-primary" title="Run detection on the current image or frame">
+          <i class="fa-solid fa-wand-magic-sparkles"></i> Detect
+        </button>
+      </div>
+
+      <div style="margin-top:10px" class="tiny muted">Tip: Press <strong>D</strong> to trigger detection quickly.</div>
+    </div>
+
+    <div class="card" aria-label="session stats and history">
+      <div class="card-header-row">
+        <div>
+          <div class="tiny muted">Session Stats</div>
+          <h3 style="margin:2px 0 0 0; font-size:18px;">Detections Overview</h3>
+        </div>
+        <div class="tiny muted">Live</div>
+      </div>
+
+      <div class="stats" role="list" aria-label="session statistics">
+        <div class="stat" role="listitem">
+          <div class="num" id="statTotal">0</div>
+          <div class="label">Processed</div>
+        </div>
+        <div class="stat" role="listitem">
+          <div class="num" id="statAlerts">0</div>
+          <div class="label">Alerts</div>
+        </div>
+        <div class="stat" role="listitem">
+          <div class="num" id="statCompliant">0</div>
+          <div class="label">Compliant</div>
+        </div>
+        <div class="stat" role="listitem">
+          <div class="num" id="statNonCompliant">0</div>
+          <div class="label">Non-Compliant</div>
+        </div>
+      </div>
+
+      <div class="results" id="resultList" aria-live="polite" aria-atomic="true"></div>
+
+      <div class="history-heading"><strong>History</strong> – Last 10 detections</div>
+      <div class="results" id="historyList" aria-live="polite">
+        <% if (typeof history !== 'undefined' && history && history.length) { %>
+          <% history.slice().reverse().slice(0,10).forEach(function(h) { %>
+            <div class="result-item">
+              <div class="dot" style="background:var(<%= h.isCompliant ? '--success' : '--danger' %>)"></div>
+              <div style="flex:1">
+                <div style="font-weight:700"><%= h.label %> — <%= h.isCompliant ? 'Compliant' : 'Non-Compliant' %></div>
+                
+                <div class="tiny muted">By: <%= h.username %> • <%= new Date(h.createdAt).toLocaleString('en-IN', { day: 'numeric', month: 'short', year: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true }) %></div>
+              
+              </div>
+              <div class="tiny muted"><%= (h.confidence * 100).toFixed(1) %>%</div>
+            </div>
+          <% }) %>
+        <% } else { %>
+          <div class="tiny muted" style="margin-top:6px;">No history saved yet.</div>
+        <% } %>
+      </div>
+
+      <div style="display:flex;gap:8px;margin-top:12px;align-items:center;justify-content:space-between">
+        <div class="tiny muted">Auto-frames: <strong id="autoFramesState">ON</strong></div>
+        <div style="display:flex;gap:8px">
+          <button id="exportBtn" class="btn btn-secondary btn-mini"><i class="fa-solid fa-file-csv"></i> Export CSV</button>
+          <button id="clearBtn" class="btn btn-secondary btn-mini"><i class="fa-solid fa-eraser"></i> Clear</button>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+<div id="toast" class="toast" style="display:none" role="status" aria-live="polite"></div>
+<audio id="alertSound" src="/sounds/alert.wav" preload="auto"></audio>
+
+<script>
+  // Refs
+  const fileInput         = document.getElementById('fileInput');
+  const previewImg        = document.getElementById('previewImg');
+  const video             = document.getElementById('video');
+  const cameraPlaceholder = document.getElementById('cameraPlaceholder');
+  const overlay           = document.getElementById('overlay');
+
+  const startCamBtn   = document.getElementById('startCamBtn');
+  const switchCamBtn  = document.getElementById('switchCamBtn');
+  const stopCamBtn    = document.getElementById('stopCamBtn');
+  const runDetectBtn  = document.getElementById('runDetectBtn');
+  const snapshotBtn   = document.getElementById('snapshotBtn');
+  const clearBtn      = document.getElementById('clearBtn');
+  const exportBtn     = document.getElementById('exportBtn');
+  const toggleAutoBtn = document.getElementById('toggleAutoBtn');
+
+  const statTotal        = document.getElementById('statTotal');
+  const statAlerts       = document.getElementById('statAlerts');
+  const statCompliant    = document.getElementById('statCompliant');
+  const statNonCompliant = document.getElementById('statNonCompliant');
+  const resultList       = document.getElementById('resultList');
+  const inferTime        = document.getElementById('inferTime');
+  const autoFramesNode   = document.getElementById('autoFrames');
+  const autoFramesState  = document.getElementById('autoFramesState');
+
+  const toast = document.getElementById('toast');
+
+  let stream = null;
+  let autoInterval = null;
+  let lastObjectUrl = null;
+  let isProcessing = false;
+  // Track Current Camera Mode (Default: Back Camera)
+  let currentFacingMode = 'environment';
+
+  let stats = { total:0, alerts:0, comp:0, non:0 };
+  let sessionResults = [];
+  let audioUnlocked = false;
+
+  function unlockAudio() {
+    if (audioUnlocked) return;
+    const sound = document.getElementById("alertSound");
+    if (!sound) return;
+
+    sound.volume = 0;
+    sound.play().then(() => {
+      sound.pause();
+      sound.currentTime = 0;
+      sound.volume = 1;
+      audioUnlocked = true;
+    }).catch(()=>{});
+  }
+
+  document.addEventListener("click", unlockAudio, { once: true });
+
+  function showToast(msg, ms=2200){
+    toast.textContent = msg;
+    toast.style.display = 'block';
+    toast.style.opacity = '1';
+    setTimeout(()=> { toast.style.opacity = '0'; setTimeout(()=> toast.style.display='none', 220); }, ms);
+  }
+
+  function updateStats(){
+    statTotal.textContent        = stats.total;
+    statAlerts.textContent       = stats.alerts;
+    statCompliant.textContent    = stats.comp;
+    statNonCompliant.textContent = stats.non;
+  }
+
+  function clearAll(){
+    overlay.innerHTML     = '';
+    resultList.innerHTML  = '';
+    sessionResults = [];
+    stats = { total:0, alerts:0, comp:0, non:0 };
+    updateStats();
+    inferTime.textContent = '—';
+    showToast('Session cleared', 1200);
+  }
+
+  if (clearBtn) clearBtn.addEventListener('click', clearAll);
+
+  fileInput.addEventListener('change', e=>{
+    const f = e.target.files[0];
+    if(!f) return;
+    if(lastObjectUrl) URL.revokeObjectURL(lastObjectUrl);
+    lastObjectUrl = URL.createObjectURL(f);
+    previewImg.src = lastObjectUrl;
+    previewImg.style.display        = 'block';
+    video.style.display             = 'none';
+    cameraPlaceholder.style.display = 'none';
+    overlay.innerHTML = '';
+  });
+
+  // START CAMERA (With Logic for Facing Mode)
+  startCamBtn.addEventListener('click', async ()=>{
+    if(stream) return;
+    try{
+      stream = await navigator.mediaDevices.getUserMedia({ 
+        video: { facingMode: currentFacingMode }, // Uses 'user' or 'environment'
+        audio: false 
+      });
+      video.srcObject = stream;
+      await video.play();
+      video.style.display = 'block';
+      previewImg.style.display = 'none';
+      cameraPlaceholder.style.display = 'none';
+      startCamBtn.disabled = true;
+      stopCamBtn.disabled = false;
+      startAutoFramesIfNeeded();
+    } catch(err){
+      console.error('Camera error', err);
+      showToast('Camera error: ' + err.message);
+    }
+  });
+
+  // NEW: Switch Camera Logic
+  if(switchCamBtn) {
+    switchCamBtn.addEventListener('click', () => {
+      // Toggle the mode
+      currentFacingMode = (currentFacingMode === 'environment') ? 'user' : 'environment';
+      
+      // If camera is currently running, restart it
+      if (stream) {
+        stopCamera();
+        // Short timeout to ensure stream closes before re-opening
+        setTimeout(() => startCamBtn.click(), 200);
+      }
+      showToast('Switched to ' + (currentFacingMode==='user'?'Front':'Back') + ' Camera');
+    });
+  }
+
+  stopCamBtn.addEventListener('click', ()=>{
+    stopCamera();
+  });
+
+  function stopCamera(){
+    if(stream) stream.getTracks().forEach(t=>t.stop());
+    stream = null;
+    if(autoInterval){ clearInterval(autoInterval); autoInterval = null; }
+    video.style.display = 'none';
+    previewImg.style.display = 'none';
+    cameraPlaceholder.style.display = 'block';
+    startCamBtn.disabled = false;
+    stopCamBtn.disabled = true;
+    autoFramesNode.textContent = 'OFF';
+    autoFramesState.textContent = 'OFF';
+  }
+
+  snapshotBtn.addEventListener('click', async ()=>{
+    if(video.style.display === 'block'){
+      const data = captureVideoFrameToDataUrl(video, 0.85);
+      previewImg.src = data;
+      previewImg.style.display = 'block';
+      video.style.display = 'none';
+      cameraPlaceholder.style.display = 'none';
+      await sendDataUrlAsFile(data);
+    } else if(previewImg.src){
+      await sendDataUrlAsFile(previewImg.src);
+    } else {
+      showToast('No source to snapshot');
+    }
+  });
+
+  toggleAutoBtn.addEventListener('click', ()=>{
+    if(autoInterval){
+      clearInterval(autoInterval); autoInterval = null; autoFramesNode.textContent = 'OFF'; autoFramesState.textContent = 'OFF'; toggleAutoBtn.setAttribute('aria-pressed','false');
+      showToast('Auto frames stopped');
+    } else {
+      startAutoFramesIfNeeded(true);
+    }
+  });
+
+  function startAutoFramesIfNeeded(fromUser=false){
+    if(autoInterval) return;
+    if(!stream || video.style.display !== 'block'){
+      if(fromUser) showToast('Start camera first');
+      return;
+    }
+    autoInterval = setInterval(()=> { captureAndSendFrame(); }, 1200);
+    autoFramesNode.textContent = 'ON';
+    autoFramesState.textContent = 'ON';
+    toggleAutoBtn.setAttribute('aria-pressed','true');
+    if(fromUser) showToast('Auto frames enabled');
+  }
+
+  runDetectBtn.addEventListener('click', async ()=>{
+    if(isProcessing) return;
+    if(previewImg.src){
+      await sendDataUrlAsFile(previewImg.src);
+    } else if(video.style.display === 'block'){
+      await captureAndSendFrame();
+    } else {
+      showToast('Upload an image or start the camera first');
+    }
+  });
+
+  async function captureAndSendFrame(){
+    try{
+      if(!stream || video.style.display !== 'block') return;
+      const dataUrl = captureVideoFrameToDataUrl(video, 0.7);
+      await detectFromDataUrl(dataUrl, '/detect-frame');
+    } catch(err){
+      console.error('Frame send error', err);
+    }
+  }
+
+  function captureVideoFrameToDataUrl(videoEl, quality=0.8){
+    const w = videoEl.videoWidth;
+    const h = videoEl.videoHeight;
+    const canvas = document.createElement('canvas');
+    canvas.width = w;
+    canvas.height = h;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(videoEl, 0, 0, w, h);
+    return canvas.toDataURL('image/jpeg', quality);
+  }
+
+  async function sendDataUrlAsFile(dataUrl){
+    return detectFromDataUrl(dataUrl, '/detect-image');
+  }
+
+  async function detectFromDataUrl(dataUrl, endpoint){
+    if(isProcessing) return;
+    isProcessing = true;
+    runDetectBtn.disabled = true;
+    try{
+      const blob = await (await fetch(dataUrl)).blob();
+      const fd = new FormData();
+      fd.append('image', blob, 'snapshot.jpg');
+
+      const start = performance.now();
+      const res = await fetch(endpoint, { method:'POST', body:fd });
+      const time = Math.round(performance.now() - start);
+      inferTime.textContent = time + ' ms';
+
+      if(!res.ok){
+        const text = await res.text();
+        showToast('Server error');
+        console.error('Server error:', text);
+        return;
+      }
+      const json = await res.json();
+      handleResult(json, dataUrl);
+    }catch(err){
+      console.error('Upload error', err);
+      showToast('Upload or network error');
+    } finally {
+      isProcessing = false;
+      runDetectBtn.disabled = false;
+    }
+  }
+
+  function handleResult(json, imgDataUrl){
+    const label = (json.label || 'Unknown').toString();
+    const conf  = (typeof json.confidence === 'number') ? json.confidence : (json.confidence ? Number(json.confidence) : 0);
+    const boxes = json.boxes || [];
+
+    // STRICT CHECK FOR NEGATIVE LABELS
+    const isNegative = /without|no|missing/i.test(label);
+    const isCompliant = !isNegative && (/uniform/i.test(label) || /ok/i.test(label) || conf >= 0.6);
+
+    stats.total++;
+    if(isCompliant) stats.comp++; else { stats.non++; stats.alerts++; }
+    updateStats();
+
+    // FORMAT DATE HERE TOO (Client Side)
+    const formattedTime = new Date().toLocaleString('en-IN', { day: 'numeric', month: 'short', year: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true });
+
+    const entry = { label, confidence: conf, time: formattedTime, compliant: !!isCompliant };
+    sessionResults.unshift(entry);
+    if(sessionResults.length > 200) sessionResults.pop();
+
+    drawOverlay(boxes, isCompliant, label, conf);
+
+    if (!isCompliant) {
+      const alertSound = document.getElementById("alertSound");
+      if (alertSound) {
+        alertSound.currentTime = 0;
+        alertSound.play().catch(e => console.log("Audio play blocked", e));
+      }
+    }
+
+    const item = document.createElement('div');
+    item.className = 'result-item';
+    item.innerHTML =
+      `<div class="dot" style="background:var(${isCompliant ? '--success' : '--danger'})"></div>
+       <div style="flex:1">
+         <div style="font-weight:700">${escapeHtml(label)}</div>
+         <div class="tiny muted">${entry.time}</div>
+       </div>
+       <div class="tiny muted">${(conf*100).toFixed(1)}%</div>`;
+    resultList.prepend(item);
+    while(resultList.children.length > 50) resultList.removeChild(resultList.lastChild);
+  }
+
+  function drawOverlay(boxes, isCompliant, label, confidence){
+    overlay.innerHTML = '';
+    const visibleEl = (video.style.display === 'block') ? video : ((previewImg.style.display==='block')? previewImg : null);
+    if(!visibleEl) return;
+
+    const ovW = overlay.clientWidth;
+    const ovH = overlay.clientHeight;
+
+    function mapBox(b){
+      const x = b.x * ovW;
+      const y = b.y * ovH;
+      const w = b.w * ovW;
+      const h = b.h * ovH;
+      return { x, y, w, h };
+    }
+
+    if(Array.isArray(boxes) && boxes.length){
+      boxes.forEach(b => {
+        const m = mapBox(b);
+        const box = document.createElement('div');
+        box.style.position = 'absolute';
+        box.style.left = m.x + 'px';
+        box.style.top = m.y + 'px';
+        box.style.width = m.w + 'px';
+        box.style.height = m.h + 'px';
+        box.style.border = `3px solid ${isCompliant ? 'var(--success)' : 'var(--danger)'}`;
+        box.style.borderRadius = '10px';
+        overlay.appendChild(box);
+
+        const badge = document.createElement('div');
+        badge.style.position = 'absolute';
+        badge.style.left = (m.x + 8) + 'px';
+        badge.style.top = (m.y + 8) + 'px';
+        badge.style.padding = '6px 10px';
+        badge.style.fontWeight = '800';
+        badge.style.borderRadius = '999px';
+        badge.style.background = isCompliant ? 'var(--success)' : 'var(--danger)';
+        badge.style.color = '#000';
+        badge.style.fontSize = '12px';
+        badge.innerText = `${label} • ${(confidence*100).toFixed(1)}%`;
+        overlay.appendChild(badge);
+      });
+    } else {
+      const box = document.createElement('div');
+      box.style.position = 'absolute';
+      box.style.inset = '0';
+      box.style.border = `3px solid ${isCompliant ? 'var(--success)' : 'var(--danger)'}`;
+      box.style.borderRadius = '12px';
+      overlay.appendChild(box);
+
+      const badge = document.createElement('div');
+      badge.style.position = 'absolute';
+      badge.style.left = '12px';
+      badge.style.top = '12px';
+      badge.style.padding = '6px 12px';
+      badge.style.fontWeight = '800';
+      badge.style.borderRadius = '999px';
+      badge.style.background = isCompliant ? 'var(--success)' : 'var(--danger)';
+      badge.style.color = '#000';
+      badge.innerText = `${label} • ${(confidence*100).toFixed(1)}%`;
+      overlay.appendChild(badge);
+    }
+  }
+
+  if(exportBtn) {
+    exportBtn.addEventListener('click', ()=>{
+      if(!sessionResults.length){ showToast('No session results to export'); return; }
+      const rows = [['label','confidence','time','compliant']];
+      sessionResults.forEach(r => rows.push([ r.label.replace(/,/g,''), (r.confidence*100).toFixed(1), r.time, r.compliant ? 'yes' : 'no' ]));
+      const csv = rows.map(r => r.join(',')).join('\n');
+      const blob = new Blob([csv], { type:'text/csv' });
+      const url  = URL.createObjectURL(blob);
+      const a    = document.createElement('a');
+      a.href     = url;
+      a.download = `detections_${new Date().toISOString().slice(0,19).replace(/[:T]/g,'-')}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+      showToast('CSV exported');
+    });
+  }
+
+  document.addEventListener('keydown', (e)=>{
+    if(e.key.toLowerCase() === 'd') runDetectBtn.click();
+  });
+
+  function escapeHtml(str){ return String(str).replace(/[&<>"']/g, s=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' })[s]); }
+
+  clearAll();
+
+  window.addEventListener('beforeunload', ()=>{
+    if(stream) stream.getTracks().forEach(t=>t.stop());
+    if(autoInterval) clearInterval(autoInterval);
+    if(lastObjectUrl) URL.revokeObjectURL(lastObjectUrl);
+  });
+</script>
+
+<%- include('includes/footer.ejs') %>

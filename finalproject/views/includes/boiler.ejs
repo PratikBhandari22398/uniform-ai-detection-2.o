@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>UniformCheck Pro</title>
+
+    <!-- google fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=DynaPuff&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <!-- bootstrap css (cdn) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-PLACEHOLDER" crossorigin="anonymous">
+
+    <!-- tailwind (optional, if you use it elsewhere) -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+
+    <!-- font awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
+        integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <!-- project css -->
+    <link rel="stylesheet" href="/style.css">
+
+    <style>
+        /* ===== GLOBAL THEME (futuristic neon) ===== */
+        :root {
+            --bg: #020617;
+            --bg-elevated: #020617;
+            --bg-card: rgba(15, 23, 42, 0.9);
+
+            --accent: #C6FF3E;      /* lime neon */
+            --accent-soft: #E4FF89;
+            --accent-2: #4BC9FF;    /* cyan */
+
+            --muted: #94A3B8;
+            --nav-height: 90px;
+        }
+
+        /* Native smooth scrolling */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background: radial-gradient(circle at top, #0f172a 0, #020617 55%);
+            color: #e5e7eb;
+            font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        }
+
+        /* ===== GLOBAL SCROLL REVEAL SYSTEM ===== */
+        [data-animate] {
+            opacity: 0;
+            transform: translateY(40px);
+            transition:
+                opacity 0.8s ease,
+                transform 0.8s cubic-bezier(.2, .9, .3, 1),
+                box-shadow 0.4s ease;
+            will-change: transform, opacity;
+        }
+
+        [data-animate].show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        [data-animate="left"] {
+            transform: translateX(-40px);
+        }
+
+        [data-animate="right"] {
+            transform: translateX(40px);
+        }
+
+        /* subtle neon lift on hover once revealed */
+        [data-animate].show:hover {
+            /* box-shadow: 0 0 40px rgba(75, 201, 255, .25); */
+            transform: translateY(-6px) scale(1.02);
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            [data-animate] {
+                opacity: 1;
+                transform: none;
+                transition: none;
+                box-shadow: none;
+            }
+
+            [data-animate].show:hover {
+                transform: none;
+                box-shadow: none;
+            }
+        }
+    </style>
+</head>
+
+<body>

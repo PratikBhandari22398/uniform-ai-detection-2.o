@@ -1,0 +1,385 @@
+<style>
+    .about-section {
+        padding: 120px 30px;
+        background: var(--bg-elevated);
+        color: #e5e7eb;
+        font-family: Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
+    }
+
+    .about-container {
+        max-width: 1300px;
+        margin: auto;
+        display: grid;
+        grid-template-columns: 1.1fr 1fr;
+        gap: 70px;
+        align-items: center;
+    }
+
+    /* ===== LEFT COLLAGE ===== */
+    .about-left-collage {
+        position: relative;
+        max-width: 520px;
+        width: 100%;
+        min-height: 380px;
+        margin: 0 auto;
+    }
+
+    .collage-img {
+        width: 100%;
+        max-width: 420px;
+        aspect-ratio: 4 / 3;
+        object-fit: cover;
+        border-radius: 22px;
+        border: 1px solid rgba(148,163,184,.5);
+        box-shadow:
+            0 30px 70px rgba(15,23,42,.9),
+            0 0 40px rgba(75,201,255,.4);
+        display: block;
+        background: #020617;
+    }
+
+    .collage-back {
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 1;
+    }
+
+    .collage-front {
+        position: absolute;
+        top: 24%;
+        left: 26%;
+        z-index: 2;
+    }
+
+    .collage-card {
+        position: absolute;
+        right: -18px;
+        top: 14%;
+        z-index: 3;
+        width: 230px;
+        border-radius: 18px;
+        padding: 14px;
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        justify-content: space-between;
+        background: linear-gradient(135deg, var(--accent-2), var(--accent));
+        box-shadow:
+            0 20px 50px rgba(15,23,42,.9),
+            0 0 40px rgba(56,189,248,.5);
+        border: 1px solid rgba(148,163,184,.6);
+        animation: floatCard 6s ease-in-out infinite;
+        transform-origin: center;
+    }
+
+    @keyframes floatCard {
+        0% { transform: translateY(0); }
+        50% { transform: translateY(-6px); }
+        100% { transform: translateY(0); }
+    }
+
+    .card-inner h4 {
+        margin: 0 0 6px 0;
+        font-size: 15px;
+        font-weight: 800;
+        color: #020617;
+    }
+
+    .card-inner p {
+        margin: 0;
+        font-size: 12px;
+        color: #020617;
+        line-height: 1.3;
+        opacity: .9;
+    }
+
+    .card-badge {
+        width: 32px;
+        height: 32px;
+        border-radius: 10px;
+        background: #020617;
+        color: var(--accent);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 900;
+        margin-bottom: 8px;
+        font-size: 11px;
+    }
+
+    .card-avatar {
+        width: 72px;
+        height: 72px;
+        object-fit: cover;
+        border-radius: 12px;
+        border: 2px solid #020617;
+        box-shadow: 0 8px 20px rgba(15,23,42,.7);
+        background: #fff;
+    }
+
+    /* ===== RIGHT CONTENT ===== */
+    .about-right {
+        padding-right: 20px;
+    }
+
+    .about-tag {
+        color: var(--accent-2);
+        font-size: 13px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .18em;
+    }
+
+    .about-title {
+        margin-top: 10px;
+        font-size: 42px;
+        font-weight: 800;
+        line-height: 1.2;
+    }
+
+    .about-tabs {
+        margin: 28px 0 22px 0;
+        display: flex;
+        gap: 16px;
+        flex-wrap: wrap;
+    }
+
+    .tab {
+        background: rgba(15,23,42,.9);
+        border: 1px solid rgba(148,163,184,.4);
+        padding: 10px 24px;
+        border-radius: 999px;
+        color: #e5e7eb;
+        font-size: 15px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: .25s ease;
+        backdrop-filter: blur(8px);
+    }
+
+    .tab:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 32px rgba(56,189,248,.25);
+    }
+
+    .tab.active {
+        background: linear-gradient(135deg, var(--accent-2), var(--accent));
+        color: #020617;
+        transform: translateY(-2px);
+        box-shadow: 0 14px 36px rgba(56,189,248,.45);
+    }
+
+    .about-text {
+        max-width: 550px;
+        color: var(--muted);
+        line-height: 1.7;
+        font-size: 16px;
+    }
+
+    .content-panel {
+        opacity: 0;
+        transform: translateY(10px);
+        transition: opacity .35s ease, transform .35s ease;
+    }
+
+    .content-panel.show {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    .impact-list {
+        margin-top: 18px;
+        padding-left: 18px;
+    }
+
+    .impact-list li {
+        color: #cbd5f5;
+        font-size: 16px;
+        margin-bottom: 12px;
+        line-height: 1.6;
+    }
+
+    .impact-list li::marker {
+        color: var(--accent);
+    }
+
+    .about-stats {
+        display: flex;
+        gap: 60px;
+        margin: 30px 0;
+        align-items: flex-end;
+        flex-wrap: wrap;
+    }
+
+    .stat h2 {
+        color: var(--accent);
+        font-size: 36px;
+        margin: 0;
+    }
+
+    .stat p {
+        margin: 6px 0 0 0;
+        color: var(--muted);
+    }
+
+    .about-buttons {
+        display: flex;
+        align-items: center;
+        gap: 28px;
+        margin-top: 36px;
+        flex-wrap: wrap;
+    }
+
+    .btn-more {
+        background: linear-gradient(135deg, var(--accent), var(--accent-soft));
+        padding: 14px 26px;
+        border-radius: 999px;
+        font-weight: 800;
+        color: #020617;
+        text-decoration: none;
+        border: none;
+        display: inline-block;
+        cursor: pointer;
+        transition: .25s ease;
+        box-shadow: 0 14px 36px rgba(198,255,62,.35);
+    }
+
+    .btn-more:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 18px 48px rgba(198,255,62,.5);
+    }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 900px) {
+        .about-section { padding: 90px 20px; }
+        .about-container { grid-template-columns: 1fr; gap: 40px; }
+        .about-left-collage { max-width: 380px; }
+        .collage-back, .collage-front {
+            position: static;
+            margin: 0 auto 14px;
+        }
+        .collage-card {
+            position: static;
+            width: 100%;
+            max-width: 360px;
+            margin: 6px auto 0;
+        }
+        .card-avatar { display: none; }
+        .about-right { padding-right: 0; }
+        .about-title { font-size: 32px; }
+    }
+
+    @media (max-width: 520px) {
+        .about-section { padding: 70px 16px; }
+        .about-title { font-size: 26px; }
+        .about-tag { font-size: 11px; }
+        .btn-more { width: 100%; text-align: center; }
+    }
+
+    /* Floating card only on small screens */
+    .collage-card { display: none; }
+    @media (max-width: 700px) {
+        .collage-card { display: flex; }
+    }
+</style>
+
+<section id="about" class="about-section">
+    <div class="about-container">
+
+        <!-- LEFT IMAGES -->
+        <div class="about-left-collage" aria-hidden="true" data-animate="left">
+            <img src="/about-1.jpg" loading="lazy" alt="team back" class="collage-img collage-back">
+            <img src="/about-2.jpg" loading="lazy" alt="team front" class="collage-img collage-front">
+
+            <div class="collage-card">
+                <div class="card-inner">
+                    <div class="card-badge">AI</div>
+                    <h4>Real-Time Checks</h4>
+                    <p>Instant uniform & ID verification without slowing the entry flow.</p>
+                </div>
+                <img src="/about-avatar.jpg" alt="avatar" class="card-avatar">
+            </div>
+        </div>
+
+        <!-- RIGHT CONTENT -->
+        <div class="about-right" data-animate="right">
+            <span class="about-tag">About Us</span>
+
+            <h1 class="about-title">Empowering Institutions With<br>Next-Gen AI Technology</h1>
+
+            <div class="about-tabs" role="tablist">
+                <button class="tab active" id="missionBtn" aria-selected="true">Our Mission</button>
+                <button class="tab" id="historyBtn" aria-selected="false">Our Impact</button>
+            </div>
+
+            <div id="aboutContent">
+
+                <div id="missionPanel" class="content-panel show">
+                    <p class="about-text">
+                        Our mission is to build intelligent, reliable, and scalable AI solutions that help educational
+                        institutions enhance safety, discipline, and operational efficiency.
+                    </p>
+
+                    <div class="about-stats">
+                        <div class="stat">
+                            <h2>25+</h2>
+                            <p>Institutions Piloting</p>
+                        </div>
+                        <div class="stat">
+                            <h2>98%</h2>
+                            <p>Detection Accuracy</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="historyPanel" class="content-panel" style="display:none;">
+                    <ul class="impact-list">
+                        <li>500+ Successful Detections Processed</li>
+                        <li>Real-Time AI-Based Monitoring</li>
+                        <li>Instant Alerts for Non-Compliance</li>
+                        <li>Automated Reports with Zero Manual Effort</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="about-buttons">
+                <a href="#" class="btn-more">More About Us →</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    const missionBtn = document.getElementById('missionBtn');
+    const historyBtn = document.getElementById('historyBtn');
+    const missionPanel = document.getElementById('missionPanel');
+    const historyPanel = document.getElementById('historyPanel');
+
+    function showPanel(showMission) {
+        if (showMission) {
+            missionBtn.classList.add('active');
+            historyBtn.classList.remove('active');
+            missionPanel.style.display = 'block';
+            historyPanel.style.display = 'none';
+
+            requestAnimationFrame(() => {
+                missionPanel.classList.add('show');
+                historyPanel.classList.remove('show');
+            });
+        } else {
+            missionBtn.classList.remove('active');
+            historyBtn.classList.add('active');
+            missionPanel.style.display = 'none';
+            historyPanel.style.display = 'block';
+
+            requestAnimationFrame(() => {
+                historyPanel.classList.add('show');
+                missionPanel.classList.remove('show');
+            });
+        }
+    }
+
+    missionBtn.addEventListener('click', () => showPanel(true));
+    historyBtn.addEventListener('click', () => showPanel(false));
+</script>

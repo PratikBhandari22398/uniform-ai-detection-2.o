@@ -1,0 +1,272 @@
+<%- include('../includes/boiler.ejs') %>
+<%- include('../includes/nav.ejs') %>
+
+<style>
+:root{
+  --bg:#050505;
+  --neon:#EDFF00;
+  --muted:#bfbfbf;
+  --card:rgba(255,255,255,0.03);
+  --border:rgba(255,255,255,0.06);
+  --success:#00FF88;
+  --danger:#FF4D4D;
+}
+
+body{
+  background:var(--bg);
+  color:#fff;
+  font-family:Inter,system-ui,sans-serif;
+}
+
+.teacher-page{
+  max-width:1200px;
+  margin:40px auto;
+  padding:20px;
+  min-height: calc(100vh - 160px);
+}
+
+/* ===== HEADER ===== */
+.header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:16px;
+  margin-bottom:20px;
+  background:linear-gradient(145deg,rgba(255,255,255,0.02),rgba(0,0,0,0.6));
+  padding:16px 18px;
+  border-radius:14px;
+  border:1px solid var(--border);
+}
+
+.header h2{ margin:0; font-weight:900; }
+.header small{ color:var(--muted); }
+
+/* ===== BUTTONS ===== */
+.btn{
+  padding:8px 16px;
+  border-radius:999px;
+  font-weight:800;
+  border:none;
+  cursor:pointer;
+  text-decoration:none;
+  transition:.15s ease;
+}
+
+.btn-primary{ background:var(--neon); color:#000; }
+.btn-primary:hover{ transform:translateY(-2px); }
+.btn-ghost{ background:transparent; color:var(--neon); border:1px solid var(--border); }
+
+/* ===== FILTERS ===== */
+.filter-box{
+  margin-bottom:18px;
+  background:var(--card);
+  padding:14px;
+  border-radius:12px;
+  border:1px solid var(--border);
+}
+
+.filter-form{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+  gap:12px;
+}
+
+/* Updated Select & Input Styles */
+select, input[type="date"] {
+  background:#0b0b0b;
+  color:#fff;
+  padding:10px 12px;
+  border-radius:10px;
+  border:1px solid var(--border);
+  font-weight:700;
+  font-family: inherit;
+  color-scheme: dark; /* Makes calendar dark mode */
+}
+
+/* ===== TABLE ===== */
+.table-card{
+  background:linear-gradient(145deg,rgba(255,255,255,0.02),rgba(0,0,0,0.7));
+  border-radius:14px;
+  border:1px solid var(--border);
+  overflow:hidden;
+}
+
+table{ width:100%; border-collapse:collapse; min-width:900px; }
+th,td{ padding:12px 14px; border-bottom:1px solid var(--border); text-align:left; }
+th{ color:var(--neon); font-size:13px; text-transform:uppercase; }
+
+.badge{
+  padding:6px 12px;
+  border-radius:999px;
+  font-weight:800;
+  font-size:13px;
+  border:1px solid var(--border);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ok{ color:#b8ffd2; border-color:rgba(0,255,136,0.3); }
+.bad{ color:#ffbdbd; border-color:rgba(255,77,77,0.3); }
+.meta{ color:var(--muted); font-size:13px; }
+
+.status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+.dot-green { background: #00FF88; box-shadow: 0 0 8px #00FF88; }
+.dot-red { background: #FF4D4D; box-shadow: 0 0 8px #FF4D4D; }
+
+@media(max-width:900px){
+  table{ min-width:0; font-size:13px; }
+  .header{ flex-direction:column; align-items:flex-start; }
+}
+</style>
+
+<div class="teacher-page">
+
+  <div class="header">
+    <div>
+      <h2>Teacher Dashboard</h2>
+      <small>Total students: <b><%= students.length %></b></small>
+    </div>
+
+    <div style="display:flex;gap:10px;flex-wrap:wrap;">
+      <% 
+        let exportUrl = "/teacher/students/export?";
+        if(query.department) exportUrl += `department=${query.department}&`;
+        if(query.year) exportUrl += `year=${query.year}&`;
+        if(query.division) exportUrl += `division=${query.division}&`;
+        if(query.date) exportUrl += `date=${query.date}&`;
+      %>
+      <a href="<%= exportUrl %>" class="btn btn-primary">Download CSV</a>
+      <form action="/teacher-logout" method="POST" style="margin:0;">
+        <button class="btn btn-ghost">Logout</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="filter-box">
+    <form method="GET" action="/teacher/students" class="filter-form">
+      
+      <input type="date" name="date" value="<%= query.date || '' %>" placeholder="Select Date">
+
+      <select name="department">
+        <option value="">All Departments</option>
+        <option value="Computer" <%= query.department == 'Computer' ? 'selected' : '' %>>Computer</option>
+        <option value="Mechanical" <%= query.department == 'Mechanical' ? 'selected' : '' %>>Mechanical</option>
+        <option value="Civil" <%= query.department == 'Civil' ? 'selected' : '' %>>Civil</option>
+      </select>
+
+      <select name="year">
+        <option value="">All Years</option>
+        <option value="1" <%= query.year == '1' ? 'selected' : '' %>>First Year</option>
+        <option value="2" <%= query.year == '2' ? 'selected' : '' %>>Second Year</option>
+        <option value="3" <%= query.year == '3' ? 'selected' : '' %>>Third Year</option>
+      </select>
+
+      <select name="division">
+        <option value="">All Divisions</option>
+        <option value="A" <%= query.division == 'A' ? 'selected' : '' %>>Division A</option>
+        <option value="B" <%= query.division == 'B' ? 'selected' : '' %>>Division B</option>
+      </select>
+
+      <button type="submit" class="btn btn-primary">Apply Filter</button>
+      
+      <% if(query.date || query.department || query.year || query.division) { %>
+        <a href="/teacher/students" class="btn btn-ghost" style="text-align:center;">Clear</a>
+      <% } %>
+    </form>
+  </div>
+
+  <div class="table-card">
+    <div style="overflow:auto;">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Username</th>
+            <th>Department</th>
+            <th>Year</th>
+            <th>Division</th>
+            <th>Uniform Status</th>
+            <th>Last Checked</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <% if(students.length === 0){ %>
+            <tr>
+              <td colspan="7" class="meta" style="text-align:center;padding:18px;">
+                No students found
+              </td>
+            </tr>
+          <% } %>
+
+          <% students.forEach((s,i)=>{ 
+               const info = uniformMap[s._id];
+               const yearText =
+                 s.year == 1 ? "First Year" :
+                 s.year == 2 ? "Second Year" :
+                 s.year == 3 ? "Third Year" : "-";
+               
+               const rawTime = (info && info.lastAt) ? info.lastAt : "";
+          %>
+            <tr>
+              <td><%= i + 1 %></td>
+              <td><span class="badge" style="border:1px solid #333;"><%= s.username %></span></td>
+              <td><%= s.department || "-" %></td>
+              <td><%= yearText %></td>
+              <td><%= s.division || "-" %></td>
+
+              <td>
+                <% if(info){ %>
+                  <% if(info.lastIsCompliant){ %>
+                    <span class="badge ok">
+                      <span class="status-dot dot-green"></span> Uniform OK
+                    </span>
+                  <% } else { %>
+                    <span class="badge bad">
+                      <span class="status-dot dot-red"></span> Not in Uniform
+                    </span>
+                  <% } %>
+                <% } else { %>
+                  <span class="meta">No data</span>
+                <% } %>
+              </td>
+
+              <td class="meta local-time" data-time="<%= rawTime %>">
+                -
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    // 1. Convert Time to Local
+    const timeCells = document.querySelectorAll('.local-time');
+    
+    timeCells.forEach(cell => {
+      const raw = cell.getAttribute('data-time');
+      if (raw) {
+        const date = new Date(raw);
+        cell.innerText = date.toLocaleString('en-IN', { 
+           day: '2-digit', month: 'short', year: 'numeric',
+           hour: '2-digit', minute: '2-digit', hour12: true 
+        });
+      } else {
+        cell.innerText = "-";
+      }
+    });
+
+    // 2. Auto-Refresh (Commented out by default, uncomment if needed)
+    // setTimeout(() => {
+    //   window.location.reload();
+    // }, 10000);
+  });
+</script>
+
+<%- include('../includes/footer.ejs') %>
