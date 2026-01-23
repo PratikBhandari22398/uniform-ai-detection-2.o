@@ -6,7 +6,7 @@ const session = require("express-session");
 const MongoStore = require("connect-mongo");
 const multer = require("multer");
 const fs = require("fs");
-const tf = require("@tensorflow/tfjs-node"); // ✅ IMPORTANT
+const tf = require("@tensorflow/tfjs-node");
 
 const app = express();
 
@@ -26,7 +26,7 @@ const TEACHER_PASSWORD = process.env.TEACHER_PASSWORD || "teacher@999";
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
 
-/* ===================== STATIC ===================== */
+/* ===================== STATIC FILES ===================== */
 app.use(express.static(path.join(__dirname, "public")));
 
 /* ===================== BODY PARSER ===================== */
@@ -144,7 +144,7 @@ app.get("/teacher/students", requireTeacher, async (req, res) => {
   });
 });
 
-/* ===================== IMAGE UPLOAD ===================== */
+/* ===================== IMAGE UPLOAD (TEMP ONLY) ===================== */
 const upload = multer({
   dest: path.join(__dirname, "public/uploads"),
 });
@@ -163,7 +163,13 @@ let model = null;
   }
 })();
 
-/* ===================== DETECTION ===================== */
+/* ===================== DETECTION LOGIC ===================== */
+/*
+  IMPORTANT:
+  - Student images are NOT stored
+  - Image is used for prediction only
+  - Image is deleted immediately after detection
+*/
 async function handleDetection(req, res) {
   if (!model) return res.status(500).json({ error: "Model not ready" });
   if (!req.file) return res.status(400).json({ error: "No image" });
@@ -201,7 +207,9 @@ async function handleDetection(req, res) {
     });
 
     tf.dispose([tensor, preds]);
-    fs.unlinkSync(req.file.path);
+
+    // ✅ delete image immediately (no storage)
+    fs.unlink(req.file.path, () => {});
 
     res.json({ label, confidence });
   } catch (err) {
@@ -213,7 +221,7 @@ async function handleDetection(req, res) {
 app.post("/detect-image", requireLogin, upload.single("image"), handleDetection);
 app.post("/detect-frame", requireLogin, upload.single("image"), handleDetection);
 
-/* ===================== START ===================== */
+/* ===================== START SERVER ===================== */
 app.listen(PORT, () =>
   console.log(`🚀 Server running at http://localhost:${PORT}`)
 );
