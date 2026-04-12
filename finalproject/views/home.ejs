@@ -1,0 +1,504 @@
+<%- include('includes/boiler.ejs') %>
+<%- include('includes/nav.ejs') %>
+
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        background: radial-gradient(circle at top left, #0f172a 0, #020617 55%);
+        color: #fff;
+        font-family: Inter, system-ui, -apple-system, "SF Pro Text", sans-serif;
+    }
+
+    .hero {
+        position: relative;
+        min-height: calc(100vh - var(--nav-height));
+        width: 100%;
+        padding: 0 90px;
+        box-sizing: border-box;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        isolation: isolate;
+        background:
+          radial-gradient(circle at top left, rgba(56,189,248,0.18) 0, transparent 55%),
+          radial-gradient(circle at bottom right, rgba(34,197,94,0.18) 0, transparent 55%),
+          #020617;
+    }
+
+    /* subtle tech grid */
+    .hero::before {
+        content: "";
+        position: absolute;
+        inset: -40px;
+        background-image:
+          linear-gradient(rgba(148,163,184,0.12) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(148,163,184,0.12) 1px, transparent 1px);
+        background-size: 70px 70px;
+        opacity: 0.16;
+        mix-blend-mode: soft-light;
+        pointer-events: none;
+    }
+
+    .hero::after {
+        content: "";
+        position: absolute;
+        width: 420px;
+        height: 420px;
+        border-radius: 999px;
+        background: radial-gradient(circle at center, rgba(59,130,246,0.38), transparent 70%);
+        top: -120px;
+        right: -80px;
+        opacity: 0.6;
+        filter: blur(2px);
+        pointer-events: none;
+    }
+
+    .hero-inner {
+        position: relative;
+        z-index: 1;
+        max-width: 1300px;
+        width: 100%;
+        display: grid;
+        grid-template-columns: 1.2fr 1fr;
+        gap: 60px;
+        align-items: center;
+    }
+
+    .hero-left {
+        padding-left: 20px;
+    }
+
+    .eyebrow {
+        color: var(--accent-2);
+        font-weight: 700;
+        letter-spacing: 0.18em;
+        font-size: 12px;
+        margin-bottom: 16px;
+        text-transform: uppercase;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .eyebrow::before {
+        content: "";
+        width: 24px;
+        height: 2px;
+        border-radius: 999px;
+        background: linear-gradient(90deg, transparent, var(--accent-2), transparent);
+        opacity: 0.9;
+    }
+
+    .hero-title {
+        font-family: "Space Grotesk", system-ui, sans-serif;
+        font-size: 60px;
+        line-height: 1.05;
+        font-weight: 800;
+        margin-bottom: 20px;
+        color: #e5e7eb;
+        letter-spacing: -0.03em;
+    }
+
+    .hero-title span {
+        color: var(--accent);
+    }
+
+    .hero-sub {
+        color: var(--muted);
+        max-width: 600px;
+        font-size: 17px;
+        line-height: 1.7;
+        margin-bottom: 30px;
+    }
+
+    .hero-meta-row {
+        display: flex;
+        gap: 24px;
+        margin-top: 20px;
+        font-size: 13px;
+        color: var(--muted);
+    }
+
+    .hero-meta {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .hero-meta strong {
+        font-size: 18px;
+        color: #e5e7eb;
+    }
+
+    .btn-solid {
+        background: linear-gradient(135deg, var(--accent), var(--accent-soft));
+        padding: 12px 30px;
+        color: #020617;
+        border-radius: 999px;
+        font-size: 16px;
+        font-weight: 800;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        border: none;
+        cursor: pointer;
+        box-shadow:
+          0 18px 45px rgba(198,255,62,0.35),
+          0 0 32px rgba(34,197,94,0.35);
+        transition:
+          transform 0.22s ease,
+          box-shadow 0.22s ease,
+          filter 0.22s ease;
+    }
+
+    .btn-solid::after {
+        content: "→";
+        font-size: 16px;
+        transform: translateX(0);
+        transition: transform 0.22s ease;
+    }
+
+    .btn-solid:hover {
+        transform: translateY(-2px) scale(1.03);
+        filter: brightness(1.05);
+        box-shadow:
+          0 22px 55px rgba(198,255,62,0.5),
+          0 0 44px rgba(59,130,246,0.4);
+    }
+
+    .btn-solid:hover::after {
+        transform: translateX(4px);
+    }
+
+    .btn-solid:active {
+        transform: scale(0.97);
+        box-shadow: 0 12px 28px rgba(198,255,62,0.3);
+    }
+
+    .hero-right {
+        position: relative;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .hero-image {
+        width: 100%;
+        max-width: 520px;
+        aspect-ratio: 3 / 4;
+        border-radius: 28px;
+        overflow: hidden;
+        background: radial-gradient(circle at top, #1e293b, #020617);
+        box-shadow:
+          0 40px 80px rgba(15,23,42,0.9),
+          0 0 60px rgba(37,99,235,0.6);
+        position: relative;
+        z-index: 1;
+        border: 1px solid rgba(148,163,184,0.6);
+    }
+
+    .hero-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+        transform: scale(1.02);
+    }
+
+    .hero-image::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(circle at bottom, transparent 30%, rgba(15,23,42,0.9));
+        mix-blend-mode: soft-light;
+        pointer-events: none;
+    }
+
+    .hero-card {
+        position: absolute;
+        background: rgba(15,23,42,0.96);
+        color: #e5e7eb;
+        padding: 12px 18px;
+        border-radius: 16px;
+        font-weight: 700;
+        font-size: 13px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        white-space: nowrap;
+        border: 1px solid rgba(148,163,184,0.7);
+        box-shadow:
+          0 18px 40px rgba(15,23,42,0.9),
+          0 0 22px rgba(59,130,246,0.6);
+        backdrop-filter: blur(14px);
+    }
+
+    .hero-card span:first-child {
+        padding: 6px 12px;
+        border-radius: 999px;
+        background: linear-gradient(135deg, var(--accent-2), var(--accent));
+        color: #020617;
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.18em;
+    }
+
+    .hero-card.small {
+        z-index: 2;
+        top: -16px;
+        left: -40px;
+        animation: floatCard 4s ease-in-out infinite;
+    }
+
+    .scroll-indicator {
+            visibility: hidden;
+        position: absolute;
+        bottom: 28px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 30px;
+        height: 50px;
+        border: 2px solid rgba(148,163,184,0.7);
+        border-radius: 999px;
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        text-decoration: none;
+        backdrop-filter: blur(6px);
+    }
+
+    .scroll-indicator span {
+        width: 6px;
+        height: 6px;
+        background: var(--accent);
+        border-radius: 50%;
+        margin-top: 8px;
+        animation: scrollDot 1.6s infinite;
+    }
+
+    @keyframes scrollDot {
+        0%   { transform: translateY(0); opacity: 1; }
+        100% { transform: translateY(22px); opacity: 0; }
+    }
+
+    @keyframes floatCard {
+        0%   { transform: translate3d(0, 0, 0); }
+        50%  { transform: translate3d(0, -6px, 0); }
+        100% { transform: translate3d(0, 0, 0); }
+    }
+
+    /* --- SERVICE BAR (Ticker) - PROFESSIONAL VERSION --- */
+    .service-bar {
+        width: 100%;
+        background: radial-gradient(circle at center, rgba(15,23,42,0.95), #020617);
+        border-top: 1px solid rgba(15,23,42,0.9);
+        border-bottom: 1px solid rgba(15,23,42,0.9);
+        overflow: hidden;
+        padding: 12px 0;
+        white-space: nowrap;
+        box-sizing: border-box;
+        box-shadow: 0 10px 25px rgba(15,23,42,0.9);
+    }
+
+    .service-track {
+        display: inline-flex;
+        gap: 40px;
+        animation: marquee 22s linear infinite;
+        padding-left: 40px;
+    }
+
+    .service-track span {
+        font-size: 15px;
+        font-weight: 600;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        padding: 6px 18px;
+        border-radius: 999px;
+        background: linear-gradient(135deg, var(--accent-2), var(--accent));
+        color: #020617;
+        box-shadow: 0 0 16px rgba(56,189,248,0.45);
+    }
+
+    @keyframes marquee {
+        0%   { transform: translateX(0); }
+        100% { transform: translateX(-50%); }
+    }
+
+    .service-bar:hover .service-track {
+        animation-play-state: paused;
+    }
+
+    /* ---------- RESPONSIVE ---------- */
+    @media (max-width: 1200px) {
+        .hero {
+            padding: 0 40px;
+        }
+
+        .hero-title {
+            font-size: 50px;
+        }
+
+        .hero-sub {
+            font-size: 16px;
+        }
+    }
+
+    @media (max-width: 950px) {
+        .hero {
+            padding: 24px 20px 32px;
+            min-height: auto;
+        }
+
+        .hero-inner {
+            grid-template-columns: 1fr;
+            text-align: center;
+            gap: 28px;
+        }
+
+        .hero-left {
+            padding-left: 0;
+            order: 2;
+        }
+
+        .hero-right {
+            order: 1;
+        }
+
+        .hero-sub {
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .hero-card.small {
+            display: none;
+        }
+
+        .hero-image {
+            max-width: 340px;
+            margin: 0 auto;
+        }
+
+        .hero-meta-row {
+            justify-content: center;
+        }
+
+        .service-track span {
+            font-size: 14px;
+        }
+
+        .service-track {
+            gap: 24px;
+        }
+    }
+
+    @media (max-width: 600px) {
+        .hero {
+            padding: 18px 16px 26px;
+        }
+
+        .hero-title {
+            font-size: 32px;
+        }
+
+        .hero-sub {
+            font-size: 15px;
+        }
+
+        .eyebrow {
+            font-size: 11px;
+        }
+
+        .btn-solid {
+            padding: 10px 22px;
+            font-size: 15px;
+            width: 100%;
+            justify-content: center;
+        }
+
+        .hero-image {
+            max-width: 260px;
+        }
+
+        .service-bar {
+            padding: 10px 0;
+        }
+
+        .service-track span {
+            font-size: 13px;
+        }
+    }
+</style>
+
+<section class="hero">
+    <div class="hero-inner">
+        <div class="hero-left">
+            <div class="eyebrow">Welcome to UniformCheck Pro</div>
+
+            <h1 class="hero-title">
+                Smart Campus Monitoring,<br>
+                <span>Real-Time Compliance.</span>
+            </h1>
+
+            <p class="hero-sub">
+                Student Monitor is an AI-driven platform that automates uniform and ID-card verification with
+                accurate, real-time insights — keeping every campus safer and more efficient.
+            </p>
+
+            <a href="#workflow" class="btn-solid">Get Started</a>
+
+            <div class="hero-meta-row">
+                <div class="hero-meta">
+                    <span>Institutions</span>
+                    <strong>25+</strong>
+                </div>
+                <div class="hero-meta">
+                    <span>Decision Accuracy</span>
+                    <strong>98%</strong>
+                </div>
+                <div class="hero-meta">
+                    <span>Students Monitored</span>
+                    <strong>300+</strong>
+                </div>
+            </div>
+        </div>
+
+        <div class="hero-right">
+            <div class="hero-card small">
+                <span>LIVE</span>
+                <span>Uniform &amp; ID Verified</span>
+            </div>
+
+            <div class="hero-image">
+                <img src="/home-1.png" loading="lazy" alt="Student verification preview">
+            </div>
+        </div>
+    </div>
+
+    <!-- scroll down to about -->
+    <a href="#about" class="scroll-indicator">
+        <span></span>
+    </a>
+</section>
+
+<!-- Ticker Bar -->
+<div class="service-bar">
+    <div class="service-track">
+        <span>AI Uniform Detection</span>
+        <span>ID Card Verification</span>
+        <span>Real-Time Alerts</span>
+        <span>Automated Reporting</span>
+        <span>AI Uniform Detection</span>
+        <span>ID Card Verification</span>
+        <span>Real-Time Alerts</span>
+        <span>Automated Reporting</span>
+    </div>
+</div>
+
+<%- include("about") %>
+<%- include("workflow") %>
+<%- include("benefits") %>
+<%- include("team") %>
+
+<%- include('includes/footer.ejs') %>

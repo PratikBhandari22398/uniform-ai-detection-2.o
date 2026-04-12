@@ -1,0 +1,359 @@
+<%- include('../includes/boiler.ejs') %>
+<%- include('../includes/nav.ejs') %>
+
+<style>
+:root {
+  --bg: #050510;
+  --neon: #3b82f6; /* Blue sync */
+  --neon-yellow: #EDFF00;
+  --muted: #94a3b8;
+  --card: rgba(255, 255, 255, 0.04);
+  --border: rgba(255, 255, 255, 0.1);
+  --success: #00FF88;
+  --danger: #FF4D4D;
+  --chart-grid: rgba(255, 255, 255, 0.05);
+}
+
+body {
+  background: var(--bg);
+  color: #fff;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+.analytics-page {
+  max-width: 1200px;
+  margin: 40px auto;
+  padding: 0 20px 60px;
+}
+
+/* ===== HEADER ===== */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.02), rgba(0, 0, 0, 0.6));
+  padding: 20px 24px;
+  border-radius: 16px;
+  border: 1px solid var(--border);
+}
+
+.header h2 { 
+  margin: 0; 
+  font-weight: 900; 
+  font-size: 1.8rem;
+  letter-spacing: -0.5px;
+}
+
+.btn {
+  padding: 10px 24px;
+  border-radius: 999px;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  font-size: 0.9rem;
+}
+
+.btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 20px rgba(59, 130, 246, 0.6);
+  color: #fff !important;
+}
+
+.btn-primary {
+  background: var(--neon);
+  color: #fff;
+  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+}
+
+.btn-ghost { 
+  background: transparent; 
+  color: var(--neon); 
+  border: 1px solid var(--border); 
+}
+
+.btn-ghost:hover {
+  background: rgba(237, 255, 0, 0.05);
+  border-color: var(--neon);
+}
+
+/* ===== GRID LAYOUT ===== */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+.chart-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 24px;
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+}
+
+.chart-card h3 {
+  margin: 0 0 20px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.chart-card h3 i {
+  color: var(--neon);
+}
+
+.chart-container {
+  height: 300px;
+  position: relative;
+}
+
+/* ===== TOP CLASS CARD ===== */
+.top-class-card {
+  grid-column: span 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  background: linear-gradient(145deg, rgba(237, 255, 0, 0.05), rgba(0, 0, 0, 0.3));
+  border: 1px solid rgba(237, 255, 0, 0.2);
+}
+
+.top-class-card .trophy {
+  font-size: 3rem;
+  margin-bottom: 15px;
+  filter: drop-shadow(0 0 10px var(--neon));
+}
+
+.top-class-card h4 {
+  margin: 5px 0;
+  font-size: 1.4rem;
+  color: var(--neon);
+  text-shadow: 0 0 15px rgba(237, 255, 0, 0.3);
+}
+
+.top-class-card p {
+  color: var(--muted);
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+  .top-class-card {
+    grid-column: span 1;
+  }
+}
+</style>
+
+<div class="analytics-page">
+  
+  <div class="header">
+    <div>
+      <h2>📊 Analytics Dashboard</h2>
+      <p style="color: var(--muted); margin: 5px 0 0; font-size: 0.9rem;">Visualizing student uniform compliance data</p>
+    </div>
+    <a href="/teacher/dashboard" class="btn btn-primary">Back to Dashboard</a>
+  </div>
+
+  <div class="stats-grid">
+    <!-- Daily Compliance Line Chart -->
+    <div class="chart-card">
+      <h3><span style="color: var(--neon);">📈</span> Daily Compliance (%)</h3>
+      <div class="chart-container">
+        <canvas id="dailyComplianceChart"></canvas>
+      </div>
+    </div>
+
+    <!-- Weekly Violations Bar Chart -->
+    <div class="chart-card">
+      <h3><span style="color: var(--danger);">⚠️</span> Weekly Violations</h3>
+      <div class="chart-container">
+        <canvas id="weeklyViolationsChart"></canvas>
+      </div>
+    </div>
+
+    <!-- Department-wise Compliance Pie Chart -->
+    <div class="chart-card">
+      <h3><span style="color: var(--success);">🏢</span> Department Compliance (%)</h3>
+      <div class="chart-container">
+        <canvas id="departmentChart"></canvas>
+      </div>
+    </div>
+
+    <!-- Top Performing Class Card -->
+    <div class="chart-card top-class-card">
+      <div class="trophy">🏆</div>
+      <h3 style="margin-bottom: 10px;">Top Performing Class</h3>
+      <% if(topClass) { %>
+        <h4><%= topClass.className %></h4>
+        <p><%= Math.round(topClass.percentage) %>% Compliant</p>
+      <% } else { %>
+        <p>No detection data available yet.</p>
+      <% } %>
+    </div>
+  </div>
+
+</div>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+  // Utility to handle dark theme defaults for Chart.js
+  Chart.defaults.color = '#bfbfbf';
+  Chart.defaults.borderColor = 'rgba(255, 255, 255, 0.05)';
+  Chart.defaults.font.family = "'Inter', sans-serif";
+
+  // 1️⃣ Daily Compliance Chart (Line)
+  const dailyCtx = document.getElementById('dailyComplianceChart').getContext('2d');
+  const dailyLabels = <%- JSON.stringify(dailyData.map(d => d.date)) %>;
+  const dailyValues = <%- JSON.stringify(dailyData.map(d => Math.round(d.percentage))) %>;
+
+  new Chart(dailyCtx, {
+    type: 'line',
+    data: {
+      labels: dailyLabels,
+      datasets: [{
+        label: 'Compliance %',
+        data: dailyValues,
+        borderColor: '#EDFF00',
+        backgroundColor: 'rgba(237, 255, 0, 0.1)',
+        borderWidth: 3,
+        fill: true,
+        tension: 0.4,
+        pointBackgroundColor: '#EDFF00',
+        pointBorderColor: '#050505',
+        pointBorderWidth: 2,
+        pointRadius: 5,
+        pointHoverRadius: 7
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        y: {
+          beginAtZero: true,
+          max: 100,
+          grid: { color: 'rgba(255, 255, 255, 0.05)' },
+          ticks: { callback: value => value + '%' }
+        },
+        x: { grid: { display: false } }
+      },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: 'rgba(0,0,0,0.8)',
+          titleColor: '#EDFF00',
+          padding: 12,
+          displayColors: false,
+          callbacks: {
+            label: context => ` Compliance: ${context.parsed.y}%`
+          }
+        }
+      }
+    }
+  });
+
+  // 2️⃣ Weekly Violations Chart (Bar)
+  const weeklyCtx = document.getElementById('weeklyViolationsChart').getContext('2d');
+  const weeklyLabels = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+  const weeklyValues = <%- JSON.stringify(weeklyViolations) %>;
+
+  new Chart(weeklyCtx, {
+    type: 'bar',
+    data: {
+      labels: weeklyLabels,
+      datasets: [{
+        label: 'Violations',
+        data: weeklyValues,
+        backgroundColor: 'rgba(255, 77, 77, 0.6)',
+        borderColor: '#FF4D4D',
+        borderWidth: 2,
+        borderRadius: 6,
+        hoverBackgroundColor: '#FF4D4D'
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        y: {
+          beginAtZero: true,
+          grid: { color: 'rgba(255, 255, 255, 0.05)' },
+          ticks: { stepSize: 1 }
+        },
+        x: { grid: { display: false } }
+      },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: 'rgba(0,0,0,0.8)',
+          titleColor: '#FF4D4D',
+          padding: 12,
+          displayColors: false
+        }
+      }
+    }
+  });
+
+  // 3️⃣ Department Compliance Chart (Pie/Doughnut)
+  const deptCtx = document.getElementById('departmentChart').getContext('2d');
+  const deptLabels = <%- JSON.stringify(departmentStats.map(d => d.department)) %>;
+  const deptValues = <%- JSON.stringify(departmentStats.map(d => Math.round(d.percentage))) %>;
+
+  new Chart(deptCtx, {
+    type: 'doughnut',
+    data: {
+      labels: deptLabels,
+      datasets: [{
+        data: deptValues,
+        backgroundColor: [
+          'rgba(0, 255, 136, 0.6)',
+          'rgba(237, 255, 0, 0.6)',
+          'rgba(0, 204, 255, 0.6)'
+        ],
+        borderColor: [
+          '#00FF88',
+          '#EDFF00',
+          '#00CCFF'
+        ],
+        borderWidth: 2,
+        hoverOffset: 15
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      cutout: '70%',
+      plugins: {
+        legend: {
+          position: 'bottom',
+          labels: { padding: 20, usePointStyle: true }
+        },
+        tooltip: {
+          backgroundColor: 'rgba(0,0,0,0.8)',
+          padding: 12,
+          callbacks: {
+            label: context => ` ${context.label}: ${context.parsed}% Compliant`
+          }
+        }
+      }
+    }
+  });
+</script>
+
+<%- include('../includes/footer.ejs') %>

@@ -1,0 +1,1409 @@
+<%- include('includes/boiler.ejs') %>
+  <%- include('includes/nav.ejs') %>
+
+    <style>
+      :root {
+        --bg: #05060f;
+        --neon: #00ffcc; /* Updated to a more AI-looking cyan */
+        --neon-yellow: #EDFF00;
+        --muted: #94a3b8;
+        --card: rgba(255, 255, 255, 0.04);
+        --card-border: rgba(255, 255, 255, 0.1);
+        --danger: #ff4d4d;
+        --success: #00ff88;
+        --accent: #3b82f6;
+      }
+
+      /* SCANNER ANIMATION */
+      .scanner-line {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 3px;
+        background: linear-gradient(to right, transparent, var(--neon), transparent);
+        box-shadow: 0 0 20px var(--neon), 0 0 40px var(--neon);
+        opacity: 0.9;
+        animation: scan-modern 2s linear infinite;
+        display: none;
+        z-index: 20;
+      }
+
+      @keyframes scan-modern {
+        0% { top: 0%; }
+        100% { top: 100%; }
+      }
+
+      @keyframes scan {
+        0% {
+          top: 0%;
+        }
+
+        50% {
+          top: 100%;
+        }
+
+        100% {
+          top: 0%;
+        }
+      }
+
+      .scan-text {
+        position: absolute;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        color: var(--neon);
+        font-weight: 800;
+        font-size: 14px;
+        background: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(8px);
+        padding: 8px 20px;
+        border-radius: 999px;
+        display: none;
+        z-index: 21;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        border: 1px solid rgba(0, 255, 204, 0.3);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+      }
+
+      .ai-status-panel {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 12px;
+        padding: 14px;
+        margin-bottom: 16px;
+      }
+
+      .ai-status-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 8px;
+        font-size: 14px;
+      }
+
+      .ai-status-row:last-child {
+        margin-bottom: 0;
+      }
+
+      .ai-label {
+        color: var(--muted);
+      }
+
+      .ai-val {
+        font-weight: 700;
+      }
+
+      .ai-val.ok {
+        color: var(--success);
+      }
+
+      .ai-val.bad {
+        color: var(--danger);
+      }
+
+      .ai-val.warn {
+        color: #FFA500;
+      }
+
+      body {
+        background: var(--bg);
+        color: #fff;
+        font-family: Inter, system-ui, -apple-system, sans-serif;
+      }
+
+      main.detect-page {
+        max-width: 1240px;
+        margin: 32px auto 40px;
+        padding: 0 20px 20px;
+      }
+
+      /* header / hero strip */
+      .detect-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+        padding: 16px 18px;
+        border-radius: 16px;
+        background: radial-gradient(circle at top left, rgba(237, 255, 0, 0.04), rgba(255, 255, 255, 0.01));
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.55);
+        margin-bottom: 22px;
+      }
+
+      .detect-header-left {
+        max-width: 720px;
+      }
+
+      .detect-eyebrow {
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: .18em;
+        color: var(--muted);
+        font-weight: 700;
+        margin-bottom: 6px;
+        display: inline-flex;
+        gap: 6px;
+        align-items: center;
+      }
+
+      .detect-eyebrow::before {
+        content: "";
+        width: 18px;
+        height: 2px;
+        border-radius: 999px;
+        background: linear-gradient(90deg, transparent, var(--neon), transparent);
+        opacity: .7;
+      }
+
+      .title {
+        font-weight: 900;
+        font-size: 32px;
+        margin: 0;
+        letter-spacing: -1px;
+      }
+
+      .title span {
+        color: var(--neon-yellow);
+      }
+
+      .subtitle {
+        color: var(--muted);
+        margin-top: 6px;
+        max-width: 760px;
+        font-size: 14px;
+        line-height: 1.6;
+      }
+
+      .detect-header-right {
+        text-align: right;
+        font-size: 13px;
+      }
+
+      .detect-header-right strong {
+        color: var(--neon);
+      }
+
+      .main-grid {
+        display: grid;
+        grid-template-columns: 1.1fr .8fr;
+        gap: 22px;
+      }
+
+      .card {
+        background: linear-gradient(145deg, rgba(255, 255, 255, 0.03), rgba(0, 0, 0, 0.85));
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        border-radius: 18px;
+        padding: 16px 16px 18px;
+        box-shadow: 0 18px 50px rgba(0, 0, 0, 0.75);
+      }
+
+      .card-header-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 6px;
+      }
+
+      .camera-area {
+        background: #000;
+        border-radius: 20px;
+        height: 480px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        overflow: hidden;
+        border: 1px solid var(--card-border);
+        box-shadow: inset 0 0 50px rgba(0, 255, 204, 0.05);
+      }
+
+      video,
+      img.preview {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        display: block;
+        background: #050505;
+      }
+
+      .placeholder {
+        color: var(--muted);
+        text-align: center;
+        padding: 8px;
+      }
+
+      .overlay {
+        position: absolute;
+        inset: 10px;
+        pointer-events: none;
+      }
+
+      .controls {
+        display: flex;
+        gap: 10px;
+        margin-top: 12px;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+
+      .btn {
+        cursor: pointer;
+        border: none;
+        padding: 10px 22px;
+        border-radius: 999px;
+        font-weight: 800;
+        font-size: 14px;
+        display: inline-flex;
+        gap: 6px;
+        transition: all .18s ease;
+        user-select: none;
+      }
+
+      .btn:hover {
+        transform: scale(1.05);
+        box-shadow: 0 0 20px rgba(59, 130, 246, 0.6);
+        color: #fff;
+      }
+
+      .btn-primary {
+        background: var(--accent); /* Blue Primary */
+        color: #fff;
+        box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+      }
+
+      .btn-primary:hover {
+        background: #2563eb; /* Slightly darker blue on hover for depth */
+      }
+
+      .btn-secondary {
+        background: rgba(255, 255, 255, 0.02);
+        color: #fdfdfd;
+        border: 1px solid rgba(255, 255, 255, 0.06);
+      }
+
+      .btn-mini {
+        padding: 6px 14px;
+        font-size: 13px;
+      }
+
+      .btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+      }
+
+      .stats {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+        margin-top: 12px;
+      }
+
+      .stat {
+        padding: 10px 10px 12px;
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.02);
+        text-align: center;
+        border: 1px solid rgba(255, 255, 255, 0.04);
+      }
+
+      .num {
+        color: var(--neon);
+        font-weight: 900;
+        font-size: 20px;
+      }
+
+      .label {
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .results {
+        margin-top: 12px;
+        max-height: 300px;
+        overflow: auto;
+        padding-right: 6px;
+      }
+
+      .result-item {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        padding: 8px 4px;
+        border-bottom: 1px dashed rgba(255, 255, 255, 0.03);
+      }
+
+      .result-item .dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 3px;
+        background: var(--neon);
+        flex: 0 0 12px;
+      }
+
+      .muted {
+        color: var(--muted);
+      }
+
+      .tiny {
+        font-size: 12px;
+        color: var(--muted);
+      }
+
+      .history-heading {
+        margin-top: 16px;
+        font-size: 13px;
+        color: var(--muted);
+        font-weight: 600;
+      }
+
+      .controls .file-input {
+        display: none;
+      }
+
+      /* small toast */
+      .toast {
+        position: fixed;
+        right: 18px;
+        bottom: 18px;
+        background: rgba(0, 0, 0, 0.6);
+        color: #fff;
+        padding: 10px 14px;
+        border-radius: 10px;
+        font-weight: 700;
+        box-shadow: 0 8px 28px rgba(0, 0, 0, 0.6);
+        z-index: 9999;
+        pointer-events: none;
+      }
+
+      /* ── Auto-logout countdown overlay ── */
+      #logoutOverlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        z-index: 99999;
+        background: rgba(0, 0, 0, 0.82);
+        backdrop-filter: blur(10px);
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        gap: 18px;
+        animation: fadeInOverlay 0.35s ease;
+      }
+
+      #logoutOverlay.show {
+        display: flex;
+      }
+
+      @keyframes fadeInOverlay {
+        from {
+          opacity: 0;
+          transform: scale(0.97);
+        }
+
+        to {
+          opacity: 1;
+          transform: scale(1);
+        }
+      }
+
+      .logout-card {
+        background: linear-gradient(145deg, rgba(255, 255, 255, 0.06), rgba(0, 0, 0, 0.7));
+        border: 1px solid rgba(237, 255, 0, 0.18);
+        border-radius: 22px;
+        padding: 40px 48px;
+        text-align: center;
+        max-width: 400px;
+        width: 90%;
+        box-shadow: 0 30px 80px rgba(0, 0, 0, 0.9), 0 0 60px rgba(237, 255, 0, 0.08);
+      }
+
+      .logout-icon {
+        font-size: 48px;
+        margin-bottom: 10px;
+        animation: pulseIcon 1s infinite ease-in-out;
+      }
+
+      @keyframes pulseIcon {
+
+        0%,
+        100% {
+          transform: scale(1);
+        }
+
+        50% {
+          transform: scale(1.12);
+        }
+      }
+
+      .logout-title {
+        font-size: 20px;
+        font-weight: 900;
+        color: #fff;
+        margin-bottom: 6px;
+      }
+
+      .logout-sub {
+        font-size: 14px;
+        color: var(--muted);
+        margin-bottom: 22px;
+      }
+
+      .logout-countdown {
+        font-size: 52px;
+        font-weight: 900;
+        color: var(--neon);
+        text-shadow: 0 0 30px rgba(237, 255, 0, 0.6);
+        line-height: 1;
+        margin-bottom: 10px;
+      }
+
+      .logout-bar-track {
+        width: 100%;
+        height: 6px;
+        background: rgba(255, 255, 255, 0.08);
+        border-radius: 999px;
+        overflow: hidden;
+        margin-top: 16px;
+      }
+
+      .logout-bar-fill {
+        height: 100%;
+        background: linear-gradient(90deg, var(--neon), #00FF88);
+        border-radius: 999px;
+        width: 100%;
+        transition: width 1s linear;
+        box-shadow: 0 0 12px rgba(237, 255, 0, 0.5);
+      }
+
+      /* responsive */
+      @media (max-width:1000px) {
+        main.detect-page {
+          margin-top: 24px;
+        }
+
+        .main-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .camera-area {
+          height: 360px;
+        }
+      }
+
+      @media (max-width:768px) {
+        .detect-header {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+
+        .detect-header-right {
+          text-align: left;
+        }
+
+        .camera-area {
+          height: 300px;
+        }
+
+        .controls .btn {
+          flex: 1 1 46%;
+        }
+      }
+
+      @media (max-width:520px) {
+        main.detect-page {
+          padding: 0 12px 18px;
+        }
+
+        .detect-header {
+          padding: 12px;
+          border-radius: 14px;
+        }
+
+        .title {
+          font-size: 20px;
+        }
+
+        .camera-area {
+          height: 240px;
+        }
+
+        .controls .btn {
+          flex: 1 1 100%;
+        }
+
+        #runDetectBtn {
+          flex: 1 1 100%;
+        }
+
+        .stats {
+          grid-template-columns: repeat(2, 1fr);
+        }
+
+        .ai-status-row {
+          font-size: 13px;
+        }
+      }
+    </style>
+
+    <main class="detect-page" aria-live="polite">
+      <header class="detect-header">
+        <div class="detect-header-left">
+          <div class="detect-eyebrow">Detection Console</div>
+          <h1 class="title">Image Detection — <span>Uniform &amp; ID Check</span></h1>
+          <p class="subtitle">
+            Upload an image or start your camera. Our AI will classify whether the student is
+            <strong>compliant</strong> with uniform / ID rules — built for teachers, admins and security staff.
+          </p>
+        </div>
+
+        <div class="detect-header-right" aria-hidden="false">
+          <div class="tiny muted">Logged in as</div>
+          <div style="font-size:14px; margin-top:2px;">
+            <strong>
+              <%= (typeof user !=='undefined' && user) ? user.username : 'Guest' %>
+            </strong>
+          </div>
+          <div style="margin-top:10px;">
+            <a href="/users/teacher-login" class="btn btn-primary btn-mini" aria-label="Teacher login">
+              <i class="fa-solid fa-chalkboard-user"></i> Teacher Login
+            </a>
+          </div>
+        </div>
+      </header>
+
+      <section class="main-grid" role="region" aria-label="Detection workspace">
+        <div class="card" aria-label="camera card">
+          <div class="card-header-row" style="border-bottom: 1px solid var(--card-border); padding-bottom: 12px; margin-bottom: 16px;">
+            <div style="display: flex; gap: 15px; align-items: center;">
+              <span class="tiny" style="color: var(--success); display: flex; align-items: center; gap: 5px;">
+                <span style="width: 8px; height: 8px; background: var(--success); border-radius: 50%; box-shadow: 0 0 8px var(--success);"></span>
+                AI Active
+              </span>
+              <span id="camStatus" class="tiny" style="color: var(--muted); display: flex; align-items: center; gap: 5px;">
+                <span style="width: 8px; height: 8px; background: var(--muted); border-radius: 50%;"></span>
+                Camera Ready
+              </span>
+              <span id="detectStatus" class="tiny" style="color: var(--muted); display: flex; align-items: center; gap: 5px;">
+                <span id="detectStatusDot" style="width: 8px; height: 8px; background: var(--muted); border-radius: 50%;"></span>
+                Detection Idle
+              </span>
+            </div>
+            <div class="tiny muted">Inference: <span id="inferTime" style="color: var(--neon);">—</span></div>
+          </div>
+
+          <div class="camera-area" id="cameraArea" aria-live="polite" aria-atomic="true">
+            <video id="video" autoplay muted playsinline style="display:none" aria-hidden="true"></video>
+            <img class="preview" id="previewImg" src="" alt="uploaded preview" style="display:none" />
+            <div class="placeholder" id="cameraPlaceholder" role="status">
+              <div style="font-weight:800;font-size:20px;color:#fff;margin-bottom:8px">Ready for Scan</div>
+              <div class="muted">Upload an image or start camera to begin</div>
+            </div>
+            <div class="overlay" id="overlay" aria-hidden="true"></div>
+            <div class="scanner-line" id="scannerLine"></div>
+            <div class="scan-text" id="scanText">AI Scanning...</div>
+          </div>
+
+          <div class="controls" role="group" aria-label="detection controls">
+            <label class="btn btn-secondary btn-mini" for="fileInput">
+              <i class="fa-solid fa-upload"></i> Upload Image
+              <input id="fileInput" class="file-input" type="file" accept="image/*" aria-label="Upload image">
+            </label>
+
+            <button id="snapshotBtn" class="btn btn-secondary btn-mini" title="Take a snapshot from the camera">
+              <i class="fa-solid fa-camera"></i> Snapshot
+            </button>
+
+            <button id="startCamBtn" class="btn btn-secondary btn-mini" aria-pressed="false">
+              <i class="fa-solid fa-video"></i> Start Cam
+            </button>
+
+            <button id="switchCamBtn" class="btn btn-secondary btn-mini" title="Switch between front and back camera">
+              <i class="fa-solid fa-rotate"></i> Switch Cam
+            </button>
+
+            <button id="stopCamBtn" class="btn btn-secondary btn-mini" disabled aria-pressed="false">
+              <i class="fa-solid fa-stop"></i> Stop
+            </button>
+
+            <button id="toggleAutoBtn" class="btn btn-secondary btn-mini" aria-pressed="true">
+              <i class="fa-solid fa-bolt"></i> Auto: <span id="autoFrames">ON</span>
+            </button>
+
+            <button id="runDetectBtn" class="btn btn-primary" title="Run detection on the current image or frame">
+              <i class="fa-solid fa-wand-magic-sparkles"></i> Detect
+            </button>
+          </div>
+
+          <div style="margin-top:10px" class="tiny muted">Tip: Press <strong>D</strong> to trigger detection quickly.
+          </div>
+        </div>
+
+        <div class="card" aria-label="session stats and history">
+          <div class="card-header-row">
+            <div>
+              <div class="tiny muted">Session Stats</div>
+              <h3 style="margin:2px 0 0 0; font-size:18px;">AI Monitoring</h3>
+            </div>
+            <div class="tiny muted">Live</div>
+          </div>
+
+          <div class="ai-status-panel">
+            <div class="ai-status-row">
+              <span class="ai-label">AI Status:</span>
+              <span class="ai-val" id="uiAiStatus">Idle</span>
+            </div>
+            <div class="ai-status-row">
+              <span class="ai-label">Uniform Status:</span>
+              <span class="ai-val" id="uiUniformStatus">—</span>
+            </div>
+            <!-- <div class="ai-status-row">
+          <span class="ai-label">Next Scan:</span>
+          <span class="ai-val" id="uiNextScan">—</span>
+        </div> -->
+            <div class="ai-status-row">
+              <span class="ai-label">Last Checked:</span>
+              <span class="ai-val" id="uiLastChecked">—</span>
+            </div>
+          </div>
+
+          <div class="stats" role="list" aria-label="session statistics">
+            <div class="stat" role="listitem">
+              <div class="num" id="statTotal">0</div>
+              <div class="label">Processed</div>
+            </div>
+            <div class="stat" role="listitem">
+              <div class="num" id="statAlerts">0</div>
+              <div class="label">Alerts</div>
+            </div>
+            <div class="stat" role="listitem">
+              <div class="num" id="statCompliant">0</div>
+              <div class="label">Compliant</div>
+            </div>
+            <div class="stat" role="listitem">
+              <div class="num" id="statNonCompliant">0</div>
+              <div class="label">Non-Compliant</div>
+            </div>
+          </div>
+
+          <div class="results" id="resultList" aria-live="polite" aria-atomic="true"></div>
+
+          <div class="history-heading"><strong>History</strong> – Last 10 detections</div>
+          <div class="results" id="historyList" aria-live="polite">
+            <% if (typeof history !=='undefined' && history && history.length) { %>
+              <% history.slice(0,10).forEach(function(h) { %>
+                <div class="result-item">
+                  <div class="dot" style="background:var(<%= h.isCompliant ? '--success' : '--danger' %>)"></div>
+                  <div style="flex:1">
+                    <div style="font-weight:700">
+                      <%= h.label %> — <%= h.isCompliant ? 'Compliant' : 'Non-Compliant' %>
+                    </div>
+
+                    <div class="tiny muted">By: <%= h.username %> • <%= new Date(h.createdAt).toLocaleString('en-IN', {
+                          day: 'numeric' , month: 'short' , year: 'numeric' , hour: 'numeric' , minute: 'numeric' ,
+                          hour12: true }) %>
+                    </div>
+
+                  </div>
+                  <div class="tiny muted">
+                    <%= (h.confidence * 100).toFixed(1) %>%
+                  </div>
+                </div>
+                <% }) %>
+                  <% } else { %>
+                    <div class="tiny muted" style="margin-top:6px;">No history saved yet.</div>
+                    <% } %>
+          </div>
+
+          <div style="display:flex;gap:8px;margin-top:12px;align-items:center;justify-content:space-between">
+            <div class="tiny muted">Auto-frames: <strong id="autoFramesState">ON</strong></div>
+            <!-- Export/Clear buttons removed -->
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
+
+    <div id="toast" class="toast" style="display:none" role="status" aria-live="polite"></div>
+    <audio id="alertSound" src="/sounds/alert.wav" preload="auto"></audio>
+
+    <!-- ── Auto-logout Countdown Overlay ── -->
+    <div id="logoutOverlay" role="alertdialog" aria-live="assertive" aria-label="Logging out">
+      <div class="logout-card">
+        <div class="logout-icon">✅</div>
+        <div class="logout-title">Detection Completed</div>
+        <div class="logout-sub" id="logoutResultBadge">Result saved successfully.</div>
+        <div class="logout-countdown" id="logoutCountdown">5</div>
+        <div style="font-size:13px;color:var(--muted);">Logging out automatically…</div>
+        <div class="logout-bar-track">
+          <div class="logout-bar-fill" id="logoutBarFill"></div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Refs
+      const fileInput = document.getElementById('fileInput');
+      const previewImg = document.getElementById('previewImg');
+      const video = document.getElementById('video');
+      const cameraPlaceholder = document.getElementById('cameraPlaceholder');
+      const overlay = document.getElementById('overlay');
+
+      const startCamBtn = document.getElementById('startCamBtn');
+      const switchCamBtn = document.getElementById('switchCamBtn');
+      const stopCamBtn = document.getElementById('stopCamBtn');
+      const runDetectBtn = document.getElementById('runDetectBtn');
+      const snapshotBtn = document.getElementById('snapshotBtn');
+      const toggleAutoBtn = document.getElementById('toggleAutoBtn');
+
+      const statTotal = document.getElementById('statTotal');
+      const statAlerts = document.getElementById('statAlerts');
+      const statCompliant = document.getElementById('statCompliant');
+      const statNonCompliant = document.getElementById('statNonCompliant');
+      const resultList = document.getElementById('resultList');
+      const inferTime = document.getElementById('inferTime');
+      const autoFramesNode = document.getElementById('autoFrames');
+      const autoFramesState = document.getElementById('autoFramesState');
+
+      const scannerLine = document.getElementById('scannerLine');
+      const uiAiStatus = document.getElementById('uiAiStatus');
+      const uiUniformStatus = document.getElementById('uiUniformStatus');
+      const uiNextScan = document.getElementById('uiNextScan');
+      const uiLastChecked = document.getElementById('uiLastChecked');
+
+      const camStatus = document.getElementById('camStatus');
+      const detectStatus = document.getElementById('detectStatus');
+      const detectStatusDot = document.getElementById('detectStatusDot');
+
+      const toast = document.getElementById('toast');
+
+      let stream = null;
+      let autoInterval = null;
+      let smartCountdown = null;
+      let nextScanSeconds = 0;
+      let tfModel = null;
+      let lastDetectionTime = 0;
+      const SMART_SCAN_INTERVAL = 40; // 40 seconds cooldown between scans
+
+      let lastObjectUrl = null;
+      let isProcessing = false;
+      // Track Current Camera Mode (Default: Back Camera)
+      let currentFacingMode = 'environment';
+
+      let stats = { total: 0, alerts: 0, comp: 0, non: 0 };
+      let sessionResults = [];
+      let audioUnlocked = false;
+
+      // Global flag from backend to differentiate Student vs Teacher behavior
+      const isTeacher = <%= (typeof isTeacher !== 'undefined' && isTeacher) ? 'true' : 'false' %>;
+
+      function unlockAudio() {
+        if (audioUnlocked) return;
+        const sound = document.getElementById("alertSound");
+        if (!sound) return;
+
+        sound.volume = 0;
+        sound.play().then(() => {
+          sound.pause();
+          sound.currentTime = 0;
+          sound.volume = 1;
+          audioUnlocked = true;
+        }).catch(() => { });
+      }
+
+      document.addEventListener("click", unlockAudio, { once: true });
+
+      function showToast(msg, ms = 2200) {
+        toast.textContent = msg;
+        toast.style.display = 'block';
+        toast.style.opacity = '1';
+        setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.style.display = 'none', 220); }, ms);
+      }
+
+      function updateStats() {
+        statTotal.textContent = stats.total;
+        statAlerts.textContent = stats.alerts;
+        statCompliant.textContent = stats.comp;
+        statNonCompliant.textContent = stats.non;
+      }
+
+      function clearAll() {
+        overlay.innerHTML = '';
+        resultList.innerHTML = '';
+        sessionResults = [];
+        stats = { total: 0, alerts: 0, comp: 0, non: 0 };
+        updateStats();
+        inferTime.textContent = '—';
+      }
+
+      fileInput.addEventListener('change', async e => {
+        const f = e.target.files[0];
+        if (!f) return;
+        if (lastObjectUrl) URL.revokeObjectURL(lastObjectUrl);
+        lastObjectUrl = URL.createObjectURL(f);
+
+        // Stop camera if running, but do not clear the screen
+        stopCamera(false);
+
+        previewImg.src = lastObjectUrl;
+        previewImg.style.display = 'block';
+        video.style.display = 'none';
+        cameraPlaceholder.style.display = 'none';
+        overlay.innerHTML = '';
+
+        // Auto-detect on image load
+        previewImg.onload = () => {
+          runImageDetection();
+        };
+      });
+
+      // START CAMERA (With Logic for Facing Mode)
+      startCamBtn.addEventListener('click', async () => {
+        if (stream) return;
+        try {
+          stream = await navigator.mediaDevices.getUserMedia({
+            video: { facingMode: currentFacingMode }, // Uses 'user' or 'environment'
+            audio: false
+          });
+          video.srcObject = stream;
+          await video.play();
+          video.style.display = 'block';
+          previewImg.style.display = 'none';
+          cameraPlaceholder.style.display = 'none';
+          startCamBtn.disabled = true;
+          stopCamBtn.disabled = false;
+
+          // Update Status
+          camStatus.style.color = 'var(--success)';
+          camStatus.querySelector('span').style.background = 'var(--success)';
+          camStatus.querySelector('span').style.boxShadow = '0 0 8px var(--success)';
+          camStatus.innerHTML = '<span style="width: 8px; height: 8px; background: var(--success); border-radius: 50%; box-shadow: 0 0 8px var(--success);"></span> Camera Active';
+
+          // Auto start smart detection loop instead of old auto frames
+          startSmartDetectionLoop();
+        } catch (err) {
+          console.error('Camera error', err);
+          showToast('Camera error: ' + err.message);
+        }
+      });
+
+      // NEW: Switch Camera Logic
+      if (switchCamBtn) {
+        switchCamBtn.addEventListener('click', () => {
+          // Toggle the mode
+          currentFacingMode = (currentFacingMode === 'environment') ? 'user' : 'environment';
+
+          // If camera is currently running, restart it
+          if (stream) {
+            stopCamera();
+            // Short timeout to ensure stream closes before re-opening
+            setTimeout(() => startCamBtn.click(), 200);
+          }
+          showToast('Switched to ' + (currentFacingMode === 'user' ? 'Front' : 'Back') + ' Camera');
+        });
+      }
+
+      stopCamBtn.addEventListener('click', () => {
+        stopCamera();
+      });
+
+      function stopCamera(clearScreen = true) {
+        if (stream) stream.getTracks().forEach(t => t.stop());
+        stream = null;
+        if (autoInterval) { clearInterval(autoInterval); autoInterval = null; }
+        if (smartCountdown) { clearInterval(smartCountdown); smartCountdown = null; }
+
+        video.style.display = 'none';
+        startCamBtn.disabled = false;
+        stopCamBtn.disabled = true;
+        autoFramesNode.textContent = 'OFF';
+        autoFramesState.textContent = 'OFF';
+
+        if (clearScreen) {
+          uiAiStatus.textContent = 'Idle';
+          uiAiStatus.className = 'ai-val';
+          uiNextScan.textContent = '—';
+          uiUniformStatus.innerHTML = '—';
+          previewImg.style.display = 'none';
+          cameraPlaceholder.style.display = 'block';
+
+          // Reset Status
+          camStatus.style.color = 'var(--muted)';
+          camStatus.querySelector('span').style.background = 'var(--muted)';
+          camStatus.querySelector('span').style.boxShadow = 'none';
+          camStatus.innerHTML = '<span style="width: 8px; height: 8px; background: var(--muted); border-radius: 50%;"></span> Camera Ready';
+        }
+      }
+
+      // Smart Detection Loop
+      function startSmartDetectionLoop() {
+        if (smartCountdown) clearInterval(smartCountdown);
+        uiAiStatus.innerHTML = '<span class="ok">Running</span>';
+        autoFramesNode.textContent = 'ON';
+        autoFramesState.textContent = 'ON';
+        toggleAutoBtn.setAttribute('aria-pressed', 'true');
+        uiNextScan.textContent = 'Scanning...';
+
+        // Just trigger the first scan after a small delay to ensure video loaded
+        setTimeout(() => {
+          runSmartScan();
+        }, 2000);
+      }
+
+      function startCountdownTimer(seconds) {
+        if (smartCountdown) clearInterval(smartCountdown);
+        nextScanSeconds = seconds;
+        uiNextScan.textContent = nextScanSeconds + ' sec';
+
+        smartCountdown = setInterval(() => {
+          nextScanSeconds--;
+          if (nextScanSeconds >= 0) {
+            uiNextScan.textContent = nextScanSeconds + ' sec';
+          }
+          if (nextScanSeconds < 0) {
+            clearInterval(smartCountdown);
+            uiNextScan.textContent = 'Scanning...';
+            runSmartScan();
+          }
+        }, 1000);
+      }
+
+      async function runImageDetection() {
+        if (!tfModel || isProcessing) return;
+        let detectedLabel = null;
+        let detectedConfidence = 0;
+        try {
+          isProcessing = true;
+          scannerLine.style.display = 'block';
+          scanText.style.display = 'block';
+          uiAiStatus.innerHTML = '<span class="ok">Scanning Image</span>';
+
+          const tensor = tf.browser.fromPixels(previewImg)
+            .resizeNearestNeighbor([224, 224])
+            .expandDims()
+            .toFloat()
+            .div(255.0);
+
+          const preds = tfModel.predict(tensor);
+          const scores = await preds.data();
+
+          const LABELS = ["1st year", "2nd year", "3rd year", "without uniform and id"];
+          const maxIndex = scores.indexOf(Math.max(...scores));
+          detectedLabel = LABELS[maxIndex];
+          detectedConfidence = scores[maxIndex];
+
+          tensor.dispose();
+          preds.dispose();
+
+          handleSmartResult(detectedLabel, detectedConfidence, true); // true = image upload bypass wait
+        } catch (err) {
+          console.error("TFJS image predict error", err);
+          detectedLabel = null; // prevent logout on error
+        } finally {
+          isProcessing = false;
+          scannerLine.style.display = 'none';
+          scanText.style.display = 'none';
+          uiAiStatus.innerHTML = '<span class="ok">Image Processed</span>';
+          
+          detectStatus.style.color = 'var(--muted)';
+          detectStatusDot.style.background = 'var(--muted)';
+          detectStatusDot.style.boxShadow = 'none';
+          detectStatus.innerHTML = '<span id="detectStatusDot" style="width: 8px; height: 8px; background: var(--muted); border-radius: 50%;"></span> Detection Idle';
+
+          // Note: Automatic logout for both IMAGE and CAMERA paths is 
+          // now exclusively handled inside saveDetectionToBackend()
+          // to prevent race conditions or duplicate overlays.
+        }
+      }
+
+      async function runSmartScan() {
+        if (!tfModel || isProcessing || !stream || video.style.display !== 'block') {
+          if (!tfModel) uiAiStatus.innerHTML = '<span class="warn">Loading AI...</span>';
+          return;
+        }
+
+        try {
+          isProcessing = true;
+          scannerLine.style.display = 'block';
+          scanText.style.display = 'block';
+          uiAiStatus.innerHTML = '<span class="ok">Scanning</span>';
+
+          detectStatus.style.color = 'var(--neon)';
+          detectStatusDot.style.background = 'var(--neon)';
+          detectStatusDot.style.boxShadow = '0 0 8px var(--neon)';
+          detectStatus.innerHTML = '<span id="detectStatusDot" style="width: 8px; height: 8px; background: var(--neon); border-radius: 50%; box-shadow: 0 0 8px var(--neon);"></span> Detection Running';
+
+          const tensor = tf.browser.fromPixels(video)
+            .resizeNearestNeighbor([224, 224])
+            .expandDims()
+            .toFloat()
+            .div(255.0);
+
+          const preds = tfModel.predict(tensor);
+          const scores = await preds.data();
+
+          const LABELS = [
+            "1st year",
+            "2nd year",
+            "3rd year",
+            "without uniform and id",
+          ];
+
+          const maxIndex = scores.indexOf(Math.max(...scores));
+          const label = LABELS[maxIndex];
+          const confidence = scores[maxIndex];
+
+          tensor.dispose();
+          preds.dispose();
+
+          handleSmartResult(label, confidence);
+
+        } catch (err) {
+          console.error("TFJS predict error", err);
+        } finally {
+          isProcessing = false;
+          scannerLine.style.display = 'none';
+          scanText.style.display = 'none';
+          uiAiStatus.innerHTML = '<span class="ok">Running</span>';
+          
+          detectStatus.style.color = 'var(--muted)';
+          detectStatusDot.style.background = 'var(--muted)';
+          detectStatusDot.style.boxShadow = 'none';
+          detectStatus.innerHTML = '<span id="detectStatusDot" style="width: 8px; height: 8px; background: var(--muted); border-radius: 50%;"></span> Detection Idle';
+        }
+      }
+
+      function handleSmartResult(label, confidence, isImageUpload = false) {
+        if (confidence < 0.80) {
+          // Ignore weak predictions to improve accuracy
+          console.log('Ignored weak prediction:', label, confidence);
+
+          if (isImageUpload) {
+            uiUniformStatus.innerHTML = `<span class="warn">⚠ Low Confidence (${(confidence * 100).toFixed(0)}%) - Ignored</span>`;
+            uiLastChecked.textContent = new Date().toLocaleTimeString();
+          } else {
+            uiUniformStatus.innerHTML = `<span class="warn">⚠ Low Confidence (${(confidence * 100).toFixed(0)}%)</span>`;
+            startCountdownTimer(SMART_SCAN_INTERVAL); // Wait 40s even if no clear result
+          }
+          return;
+        }
+
+        // Confidence >= 80%
+        const now = Date.now();
+
+        // Prevent Duplicate Detection (Smart Detection Limit)
+        if (!isImageUpload && (now - lastDetectionTime < 40000)) {
+          console.log("Skipping save to prevent spam.");
+          // Re-trigger visual update but don't save
+          updateUIForResult(label, confidence, false); // false = do not save
+          startCountdownTimer(SMART_SCAN_INTERVAL);
+          return;
+        }
+
+        lastDetectionTime = now;
+        if (!isImageUpload) {
+          startCountdownTimer(SMART_SCAN_INTERVAL);
+        }
+
+        updateUIForResult(label, confidence, true); // true = save to backend
+      }
+
+      function updateUIForResult(label, confidence, saveToBackend) {
+        const isNegative = /without|no|missing/i.test(label);
+        const isCompliant = !isNegative;
+
+        uiUniformStatus.innerHTML = isCompliant
+          ? `<span class="ok">✔ Uniform OK (${(confidence * 100).toFixed(0)}%)</span>`
+          : `<span class="bad">⚠ Not in Uniform (${(confidence * 100).toFixed(0)}%)</span>`;
+
+        uiLastChecked.textContent = new Date().toLocaleTimeString();
+
+        if (!isCompliant) {
+          showToast('⚠ Uniform Violation!', 3000);
+          const alertSound = document.getElementById("alertSound");
+          if (alertSound) {
+            alertSound.currentTime = 0;
+            alertSound.volume = 1; // Double check volume
+            alertSound.play().catch(e => console.error("Sound play failed:", e));
+          }
+        }
+
+        if (saveToBackend) {
+          saveDetectionToBackend(label, confidence, isCompliant);
+        } else {
+          drawOverlay([], isCompliant, label, confidence);
+        }
+      }
+
+      function saveDetectionToBackend(label, confidence, isCompliant) {
+        fetch('/detect', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            label: label,
+            isCompliant: isCompliant,
+            confidence: confidence,
+            timestamp: new Date().toISOString()
+          })
+        }).then(res => res.json())
+          .then(data => {
+            if (data.success) {
+              const formattedTime = new Date().toLocaleString('en-IN', { day: 'numeric', month: 'short', year: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true });
+
+              stats.total++;
+              if (isCompliant) stats.comp++; else { stats.non++; stats.alerts++; }
+              updateStats();
+
+              sessionResults.unshift({ label, confidence, time: formattedTime, compliant: isCompliant });
+              if (sessionResults.length > 200) sessionResults.pop();
+
+              drawOverlay([], isCompliant, label, confidence);
+
+              const item = document.createElement('div');
+              item.className = 'result-item';
+              item.innerHTML =
+                `<div class="dot" style="background:var(${isCompliant ? '--success' : '--danger'})"></div>
+              <div style="flex:1">
+                <div style="font-weight:700">${escapeHtml(label)}</div>
+                <div class="tiny muted">${formattedTime}</div>
+              </div>
+              <div class="tiny muted">${(confidence * 100).toFixed(1)}%</div>`;
+              resultList.prepend(item);
+              while (resultList.children.length > 50) resultList.removeChild(resultList.lastChild);
+
+              // ✅ Detection saved — trigger auto logout
+              const resultText = isCompliant
+                ? `✔ Uniform OK — ${(confidence * 100).toFixed(0)}% confidence`
+                : `⚠ Violation — ${(confidence * 100).toFixed(0)}% confidence`;
+              
+              // Trigger auto logout overlay with compliance status for visual distinction
+              startAutoLogout(resultText, isCompliant);
+            }
+          }).catch(err => console.error("Save detection error", err));
+      }
+
+      /* ─────────────────────────────────────────────
+         AUTO LOGOUT  —  called only after:
+           ✔ Detection completed
+           ✔ Result shown
+           ✔ Data saved to DB
+         Never fires while isProcessing is true.
+      ───────────────────────────────────────────── */
+      let autoLogoutTimer = null;   // guard: only one logout can be scheduled
+      const LOGOUT_DELAY = 5;    // seconds before logout
+
+      function startAutoLogout(resultSummary, isCompliant = true) {
+        // Only auto-logout students (Teachers stay logged in for continuous monitoring)
+        if (isTeacher) {
+          console.log('[Info] Auto-logout bypassed for Teacher session');
+          return;
+        }
+
+        // Avoid multiple overlapping logout timers
+        if (autoLogoutTimer) return;
+
+        const overlay = document.getElementById('logoutOverlay');
+        const badge = document.getElementById('logoutResultBadge');
+        const iconEl = overlay.querySelector('.logout-icon');
+        const countEl = document.getElementById('logoutCountdown');
+        const barFill = document.getElementById('logoutBarFill');
+
+        // Stop scanning loop
+        if (stream) stopCamera(false);
+        if (smartCountdown) { clearInterval(smartCountdown); smartCountdown = null; }
+
+        // Update Overlay UI
+        iconEl.textContent = isCompliant ? '✅' : '⚠';
+        iconEl.style.color = isCompliant ? 'var(--success)' : 'var(--danger)';
+        badge.textContent = resultSummary || 'Result saved.';
+        countEl.textContent = LOGOUT_DELAY;
+        barFill.style.transition = 'none';
+        barFill.style.width = '100%';
+
+        // Show overlay
+        overlay.classList.add('show');
+
+        // Kick off the shrinking progress bar on next frame
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            barFill.style.transition = `width ${LOGOUT_DELAY}s linear`;
+            barFill.style.width = '0%';
+          });
+        });
+
+        let remaining = LOGOUT_DELAY;
+        autoLogoutTimer = setInterval(() => {
+          remaining--;
+          countEl.textContent = remaining;
+          if (remaining <= 0) {
+            clearInterval(autoLogoutTimer);
+            autoLogoutTimer = null;
+            // POST to /logout — backend destroys session, then we redirect
+            fetch('/logout', { method: 'POST' })
+              .finally(() => {
+                window.location.href = '/';
+              });
+          }
+        }, 1000);
+      }
+
+      snapshotBtn.addEventListener('click', async () => {
+        if (video.style.display === 'block') {
+          const data = captureVideoFrameToDataUrl(video, 0.85);
+          previewImg.src = data;
+          previewImg.style.display = 'block';
+          video.style.display = 'none';
+          cameraPlaceholder.style.display = 'none';
+
+          // Auto run detection on new image, bypassing fetch post
+          runImageDetection();
+        } else if (previewImg.style.display === 'block') {
+          runImageDetection();
+        } else {
+          showToast('No source to snapshot');
+        }
+      });
+
+      toggleAutoBtn.addEventListener('click', () => {
+        if (autoInterval || smartCountdown) {
+          if (autoInterval) { clearInterval(autoInterval); autoInterval = null; }
+          if (smartCountdown) { clearInterval(smartCountdown); smartCountdown = null; }
+          autoFramesNode.textContent = 'OFF'; autoFramesState.textContent = 'OFF'; toggleAutoBtn.setAttribute('aria-pressed', 'false');
+          uiAiStatus.innerHTML = '<span class="warn">Paused</span>';
+          uiNextScan.textContent = '—';
+          showToast('Auto frames stopped');
+        } else {
+          startSmartDetectionLoop(); // Use the smart loop instead
+        }
+      });
+
+      runDetectBtn.addEventListener('click', async () => {
+        if (isProcessing) return;
+        if (previewImg.style.display === 'block') {
+          runImageDetection();
+        } else if (video.style.display === 'block') {
+          runSmartScan(); // Execute manual smart scan
+        } else {
+          showToast('Upload an image or start the camera first');
+        }
+      });
+      function captureVideoFrameToDataUrl(videoEl, quality = 0.8) {
+        const w = videoEl.videoWidth;
+        const h = videoEl.videoHeight;
+        const canvas = document.createElement('canvas');
+        canvas.width = w;
+        canvas.height = h;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(videoEl, 0, 0, w, h);
+        return canvas.toDataURL('image/jpeg', quality);
+      }
+
+      // sendDataUrlAsFile and handleResult methods eliminated because they were
+      // previously used to post imagery to the backend for node-side python detection.
+      // Now ALL detection handles through TFJS and runSmartScan() / runImageDetection()
+      // which saves ONLY the JSON schema output.
+
+      function drawOverlay(boxes, isCompliant, label, confidence) {
+        overlay.innerHTML = '';
+        const visibleEl = (video.style.display === 'block') ? video : ((previewImg.style.display === 'block') ? previewImg : null);
+        if (!visibleEl) return;
+
+        const ovW = overlay.clientWidth;
+        const ovH = overlay.clientHeight;
+
+        function mapBox(b) {
+          const x = b.x * ovW;
+          const y = b.y * ovH;
+          const w = b.w * ovW;
+          const h = b.h * ovH;
+          return { x, y, w, h };
+        }
+
+        if (Array.isArray(boxes) && boxes.length) {
+          boxes.forEach(b => {
+            const m = mapBox(b);
+            const box = document.createElement('div');
+            box.style.position = 'absolute';
+            box.style.left = m.x + 'px';
+            box.style.top = m.y + 'px';
+            box.style.width = m.w + 'px';
+            box.style.height = m.h + 'px';
+            box.style.border = `3px solid ${isCompliant ? 'var(--success)' : 'var(--danger)'}`;
+            box.style.borderRadius = '10px';
+            overlay.appendChild(box);
+
+            const badge = document.createElement('div');
+            badge.style.position = 'absolute';
+            badge.style.left = (m.x + 8) + 'px';
+            badge.style.top = (m.y + 8) + 'px';
+            badge.style.padding = '6px 10px';
+            badge.style.fontWeight = '800';
+            badge.style.borderRadius = '999px';
+            badge.style.background = isCompliant ? 'var(--success)' : 'var(--danger)';
+            badge.style.color = '#000';
+            badge.style.fontSize = '12px';
+            badge.innerText = `${label} • ${(confidence * 100).toFixed(1)}%`;
+            overlay.appendChild(badge);
+          });
+        } else {
+          const box = document.createElement('div');
+          box.style.position = 'absolute';
+          box.style.inset = '0';
+          box.style.border = `3px solid ${isCompliant ? 'var(--success)' : 'var(--danger)'}`;
+          box.style.borderRadius = '12px';
+          overlay.appendChild(box);
+
+          const badge = document.createElement('div');
+          badge.style.position = 'absolute';
+          badge.style.left = '12px';
+          badge.style.top = '12px';
+          badge.style.padding = '6px 12px';
+          badge.style.fontWeight = '800';
+          badge.style.borderRadius = '999px';
+          badge.style.background = isCompliant ? 'var(--success)' : 'var(--danger)';
+          badge.style.color = '#000';
+          badge.innerText = `${label} • ${(confidence * 100).toFixed(1)}%`;
+          overlay.appendChild(badge);
+        }
+      }
+
+      document.addEventListener('keydown', (e) => {
+        if (e.key.toLowerCase() === 'd') runDetectBtn.click();
+      });
+
+      function escapeHtml(str) { return String(str).replace(/[&<>"']/g, s => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[s]); }
+
+      clearAll();
+
+      // Initialize TFJS Model and Auto Start Camera on Page Load
+      window.addEventListener('load', async () => {
+        try {
+          uiAiStatus.innerHTML = '<span class="warn">Loading AI Model...</span>';
+          tfModel = await tf.loadLayersModel('/model/model.json');
+          console.log('TFJS Model loaded successfully on frontend.');
+          uiAiStatus.innerHTML = '<span class="ok">Model Ready</span>';
+
+          // Auto start camera using the existing button logic
+          startCamBtn.click();
+        } catch (err) {
+          console.error('Error loading TFJS model', err);
+          uiAiStatus.innerHTML = '<span class="bad">AI Load Failed</span>';
+        }
+      });
+
+      window.addEventListener('beforeunload', () => {
+        if (stream) stream.getTracks().forEach(t => t.stop());
+        if (autoInterval) clearInterval(autoInterval);
+        if (lastObjectUrl) URL.revokeObjectURL(lastObjectUrl);
+      });
+    </script>
+
+    <%- include('includes/footer.ejs') %>

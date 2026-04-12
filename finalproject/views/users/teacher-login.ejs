@@ -1,0 +1,199 @@
+<%- include('../includes/boiler.ejs') %>
+<%- include('../includes/nav.ejs') %>
+
+<style>
+  :root {
+    --bg: #05060f;
+    --card: rgba(255, 255, 255, 0.04);
+    --border: rgba(255, 255, 255, 0.1);
+    --text: #ffffff;
+    --muted: #94a3b8;
+    --accent: #3b82f6; 
+    --accent-dark: #2563eb;
+    --accent-glow: rgba(59, 130, 246, 0.3);
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    margin: 0;
+    min-height: 100vh;
+  }
+
+  .auth-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: calc(100vh - var(--nav-height) - 100px);
+    padding: 20px;
+  }
+
+  .auth-card {
+    width: 100%;
+    max-width: 400px;
+    background: var(--card);
+    backdrop-filter: blur(12px);
+    border-radius: 24px;
+    padding: 40px;
+    border: 1px solid var(--border);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    animation: slideUp 0.5s ease-out;
+  }
+
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .secure-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(59, 130, 246, 0.1);
+    color: var(--accent);
+    padding: 6px 14px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 20px;
+    border: 1px solid rgba(59, 130, 246, 0.2);
+  }
+
+  .auth-header {
+    text-align: center;
+    margin-bottom: 30px;
+  }
+
+  .auth-title {
+    font-size: 28px;
+    font-weight: 800;
+    letter-spacing: -1px;
+    margin: 0 0 8px 0;
+  }
+
+  .auth-sub {
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  /* FORM STYLES */
+  .field {
+    margin-bottom: 20px;
+  }
+
+  label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: var(--muted);
+  }
+
+  input {
+    width: 100%;
+    padding: 14px 18px;
+    border-radius: 12px;
+    background: #0b0b0b;
+    border: 1px solid var(--border);
+    color: #fff;
+    font-family: inherit;
+    font-size: 15px;
+    transition: all 0.3s ease;
+    box-sizing: border-box;
+    color-scheme: dark;
+  }
+
+  input:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 4px var(--accent-glow);
+    background: #111;
+  }
+
+  .btn-primary {
+    width: 100%;
+    padding: 14px;
+    border-radius: 999px;
+    border: none;
+    background: linear-gradient(90deg, #4A90E2, #3B82F6);
+    color: white;
+    font-weight: 700;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 10px;
+    box-shadow: 0 10px 25px var(--accent-glow);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+  }
+
+  .btn-primary:hover {
+    transform: scale(1.05);
+    box-shadow: 0 15px 35px var(--accent-glow);
+    filter: brightness(1.1);
+  }
+
+  .btn-primary:active {
+    transform: scale(0.98);
+  }
+
+  .footer-hint {
+    text-align: center;
+    margin-top: 24px;
+    font-size: 13px;
+    color: var(--muted);
+  }
+
+  /* RESPONSIVE */
+  @media (max-width: 768px) {
+    .auth-card {
+      width: 95%;
+      padding: 30px 24px;
+    }
+  }
+</style>
+
+<div class="auth-container">
+  <div class="auth-card">
+    <div style="text-align: center;">
+      <div class="secure-badge">
+        <i class="fa-solid fa-shield-halved"></i> 🔐 Secure Login
+      </div>
+    </div>
+
+    <div class="auth-header">
+      <h1 class="auth-title">Teacher Access</h1>
+      <p class="auth-sub">Login to access the secure detection dashboard</p>
+    </div>
+
+    <!-- KEEPING Form Action same as requested -->
+    <form action="/users/teacher-login" method="POST">
+      <div class="field">
+        <label for="teacherId">Teacher ID</label>
+        <input type="text" id="teacherId" name="teacherId" required placeholder="Enter Teacher ID">
+      </div>
+
+      <div class="field">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" required placeholder="Enter Password">
+      </div>
+
+      <button type="submit" class="btn-primary">
+        <span>Login to Dashboard</span>
+        <i class="fa-solid fa-arrow-right" style="font-size: 14px;"></i>
+      </button>
+    </form>
+
+    <p class="footer-hint">
+      Authorized personnel only. Sessions are monitored.
+    </p>
+  </div>
+</div>
+
+<%- include('../includes/footer.ejs') %>
