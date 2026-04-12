@@ -1,0 +1,636 @@
+/* ============================================================
+   UniformCheck Pro — Global Responsive Stylesheet
+   Covers: All pages — Mobile / Tablet / Laptop / Desktop
+   ============================================================ */
+
+/* ── 1. RESET & BOX-SIZING ─────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background: radial-gradient(circle at top, #0f172a 0, #020617 55%);
+  color: #e5e7eb;
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  -webkit-text-size-adjust: 100%;
+  transition: all 0.3s ease;
+}
+
+* {
+  transition: all 0.3s ease;
+}
+
+img, video {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* ── 2. RESPONSIVE TYPOGRAPHY ─────────────────────────────── */
+h1 { font-size: clamp(26px, 5.5vw, 60px); line-height: 1.1; font-weight: 800; letter-spacing: -0.02em; }
+h2 { font-size: clamp(22px, 4vw, 42px); line-height: 1.2; font-weight: 800; letter-spacing: -0.01em; }
+h3 { font-size: clamp(18px, 3vw, 28px); font-weight: 700; }
+p  { font-size: clamp(14px, 2vw, 17px); line-height: 1.7; color: #94a3b8; }
+
+/* ── 3. UTILITY CONTAINERS ────────────────────────────────── */
+.container {
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.section-pad {
+  padding: 80px 0;
+}
+
+/* ── 4. RESPONSIVE GRID UTILITIES ─────────────────────────── */
+.grid-auto {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 24px;
+}
+
+.flex-wrap-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+/* ── 5. RESPONSIVE BUTTONS ────────────────────────────────── */
+.btn, button.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 24px;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  border: none;
+  text-decoration: none;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  white-space: nowrap;
+}
+
+.btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 20px rgba(59, 130, 246, 0.6);
+  color: #fff;
+}
+
+.btn-primary {
+  background: var(--accent); /* Blue */
+  color: #fff;
+  box-shadow: 0 0 12px rgba(59, 130, 246, 0.3);
+}
+
+.btn-primary:active {
+  transform: scale(0.98);
+}
+
+/* ── 6. AUTH PAGES (Login / Signup / Teacher Login) ─────── */
+.auth-wrap {
+  width: 100%;
+  max-width: 440px;
+  margin: 50px auto;
+  padding: 32px 26px;
+  background: linear-gradient(145deg, rgba(255,255,255,0.04), rgba(0,0,0,0.6));
+  border-radius: 18px;
+  border: 1px solid rgba(255,255,255,0.06);
+  box-shadow: 0 18px 45px rgba(0,0,0,0.7);
+  backdrop-filter: blur(6px);
+}
+
+/* ── 7. TEACHER DASHBOARD ─────────────────────────────────── */
+.teacher-page {
+  max-width: 1200px;
+  margin: 40px auto;
+  padding: 0 20px;
+  min-height: calc(100vh - 160px);
+}
+
+/* Table horizontal scroll on mobile */
+.table-scroll-wrap {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.table-scroll-wrap table {
+  min-width: 700px;
+  width: 100%;
+  border-collapse: collapse;
+}
+
+/* Dashboard filter form */
+.filter-form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px;
+}
+
+.filter-form select,
+.filter-form input[type="date"] {
+  width: 100%;
+}
+
+/* Dashboard header */
+.dash-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+/* ── 8. DETECT PAGE ───────────────────────────────────────── */
+.detect-page {
+  max-width: 1240px;
+  margin: 32px auto 40px;
+  padding: 0 20px 20px;
+}
+
+.main-grid {
+  display: grid;
+  grid-template-columns: 1.1fr 0.8fr;
+  gap: 22px;
+}
+
+/* Camera area & preview images fully responsive */
+.camera-area {
+  background: radial-gradient(circle at top, #202020, #050505);
+  border-radius: 14px;
+  height: 440px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+.camera-area video,
+.camera-area img.preview {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+/* Detect page controls stacking */
+.controls {
+  display: flex;
+  gap: 10px;
+  margin-top: 12px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+/* ── 9. FOOTER ────────────────────────────────────────────── */
+.footer-inner {
+  max-width: 1400px;
+  margin: 0 auto 24px;
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  gap: 40px;
+  align-items: flex-start;
+}
+
+/* ── 10. MEDIA QUERIES ─────────────────────────────────────── */
+
+/* ─── LARGE DESKTOP (1400px+) ─────────── */
+@media (min-width: 1400px) {
+  .container { max-width: 1400px; }
+}
+
+/* ─── LAPTOP / SMALL DESKTOP (1024–1199px) ── */
+@media (max-width: 1200px) {
+  .teacher-page { padding: 0 16px; }
+  .main-grid { grid-template-columns: 1fr 0.85fr; gap: 16px; }
+}
+
+/* ─── TABLET LANDSCAPE (768–1023px) ──────── */
+@media (max-width: 1000px) {
+  /* Detect page stacks vertically */
+  .main-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .camera-area {
+    height: 360px;
+  }
+
+  .detect-page {
+    margin-top: 24px;
+  }
+
+  /* Dashboard */
+  .dash-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .section-pad {
+    padding: 56px 0;
+  }
+}
+
+/* ─── TABLET PORTRAIT (600–767px) ────────── */
+@media (max-width: 768px) {
+  /* Auth forms */
+  .auth-wrap {
+    margin: 30px 16px;
+    padding: 26px 18px;
+  }
+
+  /* Detect page */
+  .detect-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .detect-header-right {
+    text-align: left;
+  }
+
+  .camera-area {
+    height: 320px;
+  }
+
+  /* Controls full width */
+  .controls .btn {
+    flex: 1 1 48%;
+  }
+
+  /* Teacher dashboard table wraps */
+  .table-scroll-wrap {
+    margin: 0 -4px;
+  }
+
+  /* Footer */
+  .footer-inner {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+
+  .footer-bottom {
+    flex-direction: column;
+    gap: 10px;
+    align-items: flex-start;
+  }
+
+  .site-footer {
+    padding: 28px 20px 20px;
+  }
+
+  /* Section padding */
+  .section-pad {
+    padding: 44px 0;
+  }
+
+  /* Filter form: 2 column on tablet */
+  .filter-form {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* ─── MOBILE (max 600px) ──────────────── */
+@media (max-width: 600px) {
+  /* Detect page */
+  .detect-page {
+    padding: 0 14px 18px;
+  }
+
+  .detect-header {
+    padding: 14px;
+    border-radius: 14px;
+  }
+
+  .camera-area {
+    height: 260px;
+  }
+
+  /* All controls stack vertically */
+  .controls .btn {
+    flex: 1 1 100%;
+  }
+
+  #runDetectBtn {
+    flex: 1 1 100%;
+  }
+
+  /* Auth pages */
+  .auth-wrap {
+    margin: 20px 12px;
+    padding: 22px 14px;
+    border-radius: 14px;
+  }
+
+  /* Buttons full width on mobile */
+  .btn-submit {
+    width: 100%;
+  }
+
+  /* Filter form: single column on mobile */
+  .filter-form {
+    grid-template-columns: 1fr;
+  }
+
+  /* Table */
+  .table-scroll-wrap table {
+    font-size: 13px;
+  }
+
+  /* Teacher page */
+  .teacher-page {
+    margin: 16px auto;
+    padding: 0 12px;
+  }
+}
+
+/* ─── VERY SMALL MOBILE (max 400px) ───── */
+@media (max-width: 400px) {
+  .auth-wrap {
+    margin: 12px 8px;
+    padding: 18px 12px;
+  }
+
+  .camera-area {
+    height: 220px;
+  }
+}
+
+/* ── 11. AI STATUS PANEL ─────────────────────────────────── */
+.ai-status-panel {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 12px;
+  padding: 14px;
+  margin-bottom: 16px;
+}
+
+.ai-status-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font-size: 14px;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.ai-status-row:last-child { margin-bottom: 0; }
+
+/* ── 12. STATS GRID ──────────────────────────────────────── */
+.stats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-top: 12px;
+}
+
+@media (max-width: 480px) {
+  .stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* ── 13. SCROLLBAR (Webkit browsers) ─────────────────────── */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(255,255,255,0.03);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.12);
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255,255,255,0.22);
+}
+
+/* ── 14. ABOUT / WORKFLOW / BENEFITS / TEAM PAGES ─────────── */
+/* Generic responsive section wrapper */
+.page-section {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 60px 24px;
+}
+
+@media (max-width: 768px) {
+  .page-section {
+    padding: 40px 16px;
+  }
+}
+
+/* Two column to one column generic pattern */
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  align-items: center;
+}
+
+@media (max-width: 900px) {
+  .two-col {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+}
+
+/* Card grids */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 20px;
+}
+
+/* ── 15. RESPONSIVE IMAGES IN SECTIONS ───────────────────── */
+.section-img {
+  width: 100%;
+  height: auto;
+  max-height: 480px;
+  object-fit: cover;
+  border-radius: 16px;
+}
+
+/* ── 16. BADGE / STATUS RESPONSIVE ──────────────────────── */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.badge.ok {
+  box-shadow: 0 0 12px rgba(0, 255, 136, 0.4);
+  background: rgba(0, 255, 136, 0.1);
+  color: #00ff88;
+  border: 1px solid rgba(0, 255, 136, 0.2);
+}
+
+.badge.bad {
+  box-shadow: 0 0 12px rgba(255, 77, 77, 0.4);
+  background: rgba(255, 77, 77, 0.1);
+  color: #ff4d4d;
+  border: 1px solid rgba(255, 77, 77, 0.2);
+}
+
+/* ── 17. FORM ELEMENTS GLOBAL ────────────────────────────── */
+input, select, textarea {
+  width: 100%;
+  font-family: inherit;
+}
+
+/* ── 18. NAVBAR FIXES FOR ALL SCREEN SIZES ───────────────── */
+.navbar-custom {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Ensure .right-buttons doesn't overflow on mobile */
+@media (max-width: 900px) {
+  .right-buttons {
+    /* Already positioned absolute in nav.ejs, but ensure it fits */
+    max-height: calc(100vh - 70px);
+    overflow-y: auto;
+  }
+}
+
+/* ── 19. TOAST (Notification) ────────────────────────────── */
+.toast {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  max-width: calc(100vw - 32px);
+  word-break: break-word;
+  background: rgba(0,0,0,0.85);
+  color: #fff;
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-weight: 700;
+  box-shadow: 0 8px 28px rgba(0,0,0,0.6);
+  z-index: 9999;
+  pointer-events: none;
+  font-size: 14px;
+}
+
+/* ── 20. RESULT ITEMS ─────────────────────────────────────── */
+.result-item {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding: 8px 4px;
+  border-bottom: 1px dashed rgba(255,255,255,0.04);
+  flex-wrap: wrap;
+}
+
+/* ── 21. DETECT PAGE CARD ─────────────────────────────────── */
+.card {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 18px;
+  padding: 20px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+}
+
+/* ── 22. SCANNER LINE ─────────────────────────────────────── */
+.scanner-line {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: linear-gradient(to right, transparent, #00ffcc, transparent);
+  box-shadow: 0 0 20px #00ffcc, 0 0 40px #00ffcc;
+  opacity: 0.9;
+  animation: scan-modern 2s linear infinite;
+  display: none;
+  z-index: 10;
+}
+
+@keyframes scan-modern {
+  0% { top: 0; }
+  100% { top: 100%; }
+}
+
+@keyframes scan {
+  0%   { top: 0%; }
+  50%  { top: 100%; }
+  100% { top: 0%; }
+}
+
+.scan-text {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  color: #EDFF00;
+  font-weight: 800;
+  font-size: 12px;
+  background: rgba(0,0,0,0.7);
+  padding: 6px 12px;
+  border-radius: 8px;
+  display: none;
+  z-index: 10;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border: 1px solid rgba(237,255,0,0.3);
+}
+
+/* ── 23. PRINT STYLES (Teacher Dashboard) ─────────────────── */
+@media print {
+  .navbar-custom,
+  .site-footer,
+  .filter-box,
+  .dash-header > div:last-child {
+    display: none !important;
+  }
+
+  .teacher-page {
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    background: #fff;
+    color: #000;
+  }
+
+  table {
+    border-collapse: collapse;
+  }
+
+  th, td {
+    border: 1px solid #ccc;
+    padding: 8px;
+    color: #000;
+  }
+}

@@ -1,0 +1,280 @@
+<%- include("../includes/boiler.ejs") %>
+<%- include("../includes/nav.ejs") %>
+
+<style>
+  :root {
+    --bg: #05060f;
+    --card: rgba(255, 255, 255, 0.04);
+    --border: rgba(255, 255, 255, 0.1);
+    --text: #ffffff;
+    --muted: #94a3b8;
+    --accent: #3b82f6; /* Premium Blue */
+    --accent-glow: rgba(59, 130, 246, 0.5);
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+
+  .auth-container {
+    max-width: 480px;
+    margin: 60px auto;
+    padding: 0 20px;
+  }
+
+  .auth-card {
+    background: var(--card);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 40px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  }
+
+  /* TOGGLE TABS */
+  .auth-tabs {
+    display: flex;
+    background: rgba(0, 0, 0, 0.3);
+    padding: 6px;
+    border-radius: 999px;
+    margin-bottom: 30px;
+    border: 1px solid var(--border);
+  }
+
+  .tab-btn {
+    flex: 1;
+    padding: 12px;
+    border: none;
+    border-radius: 999px;
+    background: transparent;
+    color: var(--muted);
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+    font-size: 14px;
+  }
+
+  .tab-btn.active {
+    background: var(--accent);
+    color: #fff;
+    box-shadow: 0 4px 15px var(--accent-glow);
+  }
+
+  .auth-form {
+    display: none;
+    animation: fadeIn 0.4s ease;
+  }
+
+  .auth-form.active {
+    display: block;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .auth-title {
+    font-size: 28px;
+    font-weight: 800;
+    margin-bottom: 8px;
+    letter-spacing: -1px;
+    text-align: center;
+  }
+
+  .auth-sub {
+    color: var(--muted);
+    font-size: 14px;
+    text-align: center;
+    margin-bottom: 30px;
+  }
+
+  /* INPUTS */
+  .field { margin-bottom: 20px; }
+  label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: var(--muted);
+  }
+
+  input, select {
+    width: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid var(--border);
+    padding: 14px 18px;
+    border-radius: 12px;
+    color: #fff;
+    font-family: inherit;
+    font-size: 15px;
+    transition: all 0.3s ease;
+    color-scheme: dark; /* Ensures dark OS widgets */
+  }
+
+  select {
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='white'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 15px center;
+    background-size: 18px;
+  }
+
+  select option {
+    background-color: #0c0e1a;
+    color: #fff;
+    padding: 10px;
+  }
+
+  input:focus, select:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 4px var(--accent-glow);
+  }
+
+  .btn-submit {
+    width: 100%;
+    padding: 14px;
+    border-radius: 999px;
+    border: none;
+    background: var(--accent);
+    color: #fff;
+    font-weight: 800;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 10px;
+  }
+
+  .btn-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px var(--accent-glow);
+  }
+
+  .error-box {
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    color: #f87171;
+    padding: 12px;
+    border-radius: 12px;
+    margin-bottom: 24px;
+    font-size: 13px;
+    text-align: center;
+  }
+
+  .grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+  }
+</style>
+
+<div class="auth-container">
+  <div class="auth-card">
+    <div class="auth-tabs">
+      <button class="tab-btn <%= tab === 'login' ? 'active' : '' %>" onclick="switchTab('login')">Login</button>
+      <button class="tab-btn <%= tab === 'signup' ? 'active' : '' %>" onclick="switchTab('signup')">Signup</button>
+    </div>
+
+    <% if (error) { %>
+      <div class="error-box"><%= error %></div>
+    <% } %>
+
+    <!-- LOGIN FORM -->
+    <div id="login-form" class="auth-form <%= tab === 'login' ? 'active' : '' %>">
+      <h2 class="auth-title">Welcome Back</h2>
+      <p class="auth-sub">Student login for uniform scanning</p>
+      
+      <form action="/login" method="POST">
+        <div class="field">
+          <label>Username</label>
+          <input type="text" name="username" required placeholder="Enter username">
+        </div>
+        <div class="field">
+          <label>Password</label>
+          <input type="password" name="password" required placeholder="••••••••">
+        </div>
+        <button type="submit" class="btn-submit">Login</button>
+      </form>
+    </div>
+
+    <!-- SIGNUP FORM -->
+    <div id="signup-form" class="auth-form <%= tab === 'signup' ? 'active' : '' %>">
+      <h2 class="auth-title">Get Started</h2>
+      <p class="auth-sub">Register your new student account</p>
+      
+      <form action="/signup" method="POST">
+        <div class="grid-2">
+           <div class="field">
+            <label>Username</label>
+            <input type="text" name="username" required>
+          </div>
+          <div class="field">
+            <label>Email</label>
+            <input type="email" name="email" required>
+          </div>
+        </div>
+        
+        <div class="field">
+          <label>Password</label>
+          <input type="password" name="password" required>
+        </div>
+
+        <div class="field">
+          <label>Department</label>
+          <select name="department" required>
+            <option value="">Select Department</option>
+            <option value="Computer">Computer</option>
+            <option value="Mechanical">Mechanical</option>
+            <option value="Electrical">Electrical</option>
+            <option value="Civil">Civil</option>
+          </select>
+        </div>
+
+        <div class="grid-2">
+          <div class="field">
+            <label>Year</label>
+            <select name="year" required>
+              <option value="">Select Year</option>
+              <option value="1">1st Year</option>
+              <option value="2">2nd Year</option>
+              <option value="3">3rd Year</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Division</label>
+            <select name="division" required>
+              <option value="">Select Division</option>
+              <option value="A">Division A</option>
+              <option value="B">Division B</option>
+              <option value="C">Division C</option>
+            </select>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-submit">Sign Up</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  function switchTab(tab) {
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    document.querySelectorAll('.auth-form').forEach(form => form.classList.remove('active'));
+    
+    if (tab === 'login') {
+      document.querySelector('.tab-btn:nth-child(1)').classList.add('active');
+      document.getElementById('login-form').classList.add('active');
+    } else {
+      document.querySelector('.tab-btn:nth-child(2)').classList.add('active');
+      document.getElementById('signup-form').classList.add('active');
+    }
+  }
+</script>
+
+<%- include("../includes/footer.ejs") %>
